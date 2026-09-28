@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Vantedge Member Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@300;400;700&display=swap">
+<style>
+  :root{
+    color-scheme: dark;
+    --ink:#0c0e1e;
+    --box:#0c0e1e;
+    --tile:#13162a;
+    --line:#2c3048;
+    --line-soft:#1e2136;
+    --text:#f8f7f3;
+    --muted:#a9acbd;
+    --dim:#7c8098;
+    --cream:#dfdcc9;
+    --callout:#ede9e0;
+    --ok:#8fbf9f;
+    --ok-bg:rgba(143,191,159,.12);
+    --warn:#d9b872;
+    --warn-bg:rgba(217,184,114,.12);
+    --bad:#d98a86;
+    --bad-bg:rgba(217,138,134,.12);
+    --display:'Playfair Display', Georgia, 'Times New Roman', serif;
+    --body:'Lato', 'Helvetica Neue', Arial, sans-serif;
+    --logo:'Times New Roman', Times, serif;
+    --r:12px;
+  }
+  *{box-sizing:border-box}
+  html,body{background:#08091a}
+  body{margin:0;color:var(--text);font-family:var(--body);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  button,input,select{font-family:inherit;font-size:inherit;color:inherit}
+  button{cursor:pointer}
+  :focus-visible{outline:2px solid var(--cream);outline-offset:2px}
+  h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance;line-height:1.2}
+  .num{font-variant-numeric:tabular-nums}
+
+  /* ---------- Top bar ---------- */
+  .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(8,9,20,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--line-soft)}
+  .top-in{max-width:1180px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+  .wordmark{font-family:var(--logo);font-weight:400;color:var(--cream);letter-spacing:.42em;font-size:18px;white-space:nowrap}
+  .wordmark small{display:block;font-family:var(--body);letter-spacing:.24em;font-size:9.5px;color:var(--dim);margin-top:2px;text-transform:uppercase}
+  .tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{background:none;border:1px solid transparent;border-radius:8px;padding:8px 14px;color:var(--muted);font-size:13px;letter-spacing:.06em;white-space:nowrap;display:flex;align-items:center;gap:8px}
+  .tab:hover{color:var(--text)}
+  .tab[aria-selected="true"]{color:var(--text);background:var(--box);border-color:var(--line)}
+  .tab .lk{font-size:11px;opacity:.8}
+  .top-r{display:flex;align-items:center;gap:12px}
+  .viewswitch{display:flex;background:var(--box);border:1px solid var(--line);border-radius:999px;padding:3px}
+  .viewswitch button{background:none;border:0;border-radius:999px;padding:5px 12px;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .viewswitch button[aria-pressed="true"]{background:var(--tile);color:var(--cream)}
+  .me{display:flex;align-items:center;gap:10px;background:none;border:0;padding:0}
+  .av{width:36px;height:36px;border-radius:50%;background:var(--tile);border:1px solid var(--line);display:grid;place-items:center;font-size:12.5px;font-weight:700;color:var(--cream);letter-spacing:.04em}
+  .me-t{text-align:left;line-height:1.3;font-size:12.5px}
+  .me-t b{display:block;font-weight:700;color:var(--text)}
+  .me-t span{color:var(--dim)}
+
+  /* ---------- Layout ---------- */
+  main{max-width:1180px;margin:0 auto;padding-inline:24px;padding-block:36px 96px}
+  .view{display:flex;flex-direction:column;gap:28px}
+  .eyebrow{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--cream)}
+  .head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+  .head h1{font-size:clamp(28px,4vw,40px);margin-top:8px}
+  .head p{color:var(--muted);margin:8px 0 0;max-width:62ch}
+  .box{background:var(--box);border:1px solid var(--line);border-radius:var(--r);padding:26px}
+  .box h2{font-size:21px}
+  .box-h{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap}
+  .box-h p{margin:4px 0 0;color:var(--muted);font-size:13.5px}
+  .grid2{display:grid;grid-template-columns:1.25fr 1fr;gap:24px;align-items:start}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+
+  /* ---------- Buttons & chips ---------- */
+  .btn{border-radius:9px;padding:11px 18px;font-size:13px;font-weight:700;letter-spacing:.06em;border:1px solid var(--line);background:var(--tile);color:var(--text);display:inline-flex;align-items:center;gap:8px;justify-content:center;transition:border-color .15s, background .15s}
+  .btn:hover{border-color:var(--cream)}
+  .btn.primary{background:var(--cream);color:var(--ink);border-color:var(--cream)}
+  .btn.primary:hover{background:var(--callout)}
+  .btn.ghost{background:transparent}
+  .btn.danger{background:transparent;color:var(--bad);border-color:rgba(217,138,134,.45)}
+  .btn.danger:hover{border-color:var(--bad)}
+  .btn.sm{padding:7px 12px;font-size:12px}
+  .btn[disabled]{opacity:.45;cursor:not-allowed}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:4px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+  .chip .d{width:6px;height:6px;border-radius:50%;background:currentColor}
+  .chip.ok{color:var(--ok);background:var(--ok-bg);border-color:transparent}
+  .chip.warn{color:var(--warn);background:var(--warn-bg);border-color:transparent}
+  .chip.bad{color:var(--bad);background:var(--bad-bg);border-color:transparent}
+  .chip.cream{color:var(--cream);border-color:var(--line)}
+
+  /* ---------- Callout ---------- */
+  .callout{background:var(--callout);color:var(--ink);border-radius:var(--r);padding:20px 24px;display:flex;align-items:center;gap:20px;justify-content:space-between;flex-wrap:wrap}
+  .callout b{font-family:var(--display);font-size:18px;display:block;margin-bottom:2px}
+  .callout p{margin:0;font-size:14px;max-width:64ch}
+  .callout .btn.primary{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+  .callout .btn.primary:hover{background:#13162a}
+  .callout.revoked{background:var(--bad-bg);color:var(--text);border:1px solid rgba(217,138,134,.4)}
+  .callout.revoked b{color:var(--bad)}
+
+  /* ---------- Profile card ---------- */
+  .pid{display:flex;align-items:center;gap:18px;margin-bottom:22px;flex-wrap:wrap}
+  .pid .av{width:64px;height:64px;font-size:20px;font-family:var(--display)}
+  .pid h2{font-size:26px}
+  .pid .sub{color:var(--muted);font-size:14px;margin-top:2px}
+  .kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .kv div{background:var(--tile);border-radius:10px;padding:12px 14px;min-width:0}
+  .kv dt{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin-bottom:3px}
+  .kv dd{margin:0;font-size:14.5px;overflow-wrap:anywhere}
+  .kv dd b{color:var(--cream);font-weight:700}
+
+  /* ---------- Checklist ---------- */
+  .steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+  .step{display:grid;grid-template-columns:34px 1fr auto;gap:14px;align-items:center;background:var(--tile);border-radius:10px;padding:12px 14px}
+  .step .n{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-size:12.5px;color:var(--muted)}
+  .step.done .n{background:var(--cream);color:var(--ink);border-color:var(--cream);font-weight:700}
+  .step .t{font-size:14.5px}
+  .step .s{font-size:12.5px;color:var(--dim)}
+  .step.done .t{color:var(--muted)}
+  .prog{height:6px;background:var(--tile);border-radius:999px;overflow:hidden;margin:4px 0 18px}
+  .prog span{display:block;height:100%;background:var(--cream);border-radius:999px;transition:width .3s}
+
+  /* ---------- Contacts ---------- */
+  .contacts{display:flex;flex-direction:column;gap:10px}
+  .ct{display:flex;align-items:center;gap:12px;background:var(--tile);border-radius:10px;padding:12px 14px}
+  .ct .av{width:34px;height:34px;font-size:11.5px}
+  .ct .who{flex:1;min-width:0;line-height:1.35}
+  .ct .who b{display:block;font-size:14px}
+  .ct .who span{font-size:12.5px;color:var(--dim)}
+
+  /* ---------- Resources ---------- */
+  .filters{display:flex;gap:8px;flex-wrap:wrap}
+  .fbtn{background:var(--box);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:12.5px;color:var(--muted)}
+  .fbtn[aria-pressed="true"]{background:var(--cream);color:var(--ink);border-color:var(--cream);font-weight:700}
+  .res-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+  .res{background:var(--box);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:10px;position:relative;min-height:190px}
+  .res .rtype{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);display:flex;justify-content:space-between;gap:8px}
+  .res h3{font-size:17.5px}
+  .res p{margin:0;color:var(--muted);font-size:13.5px;flex:1}
+  .res .rf{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-top:12px;border-top:1px solid var(--line-soft);font-size:12px;color:var(--dim)}
+  .res.locked h3,.res.locked p{filter:blur(3.5px);user-select:none}
+  .res.locked .rtype span:first-child{filter:none}
+  .lockover{position:absolute;inset:0;display:grid;place-items:center;border-radius:var(--r);pointer-events:none}
+  .lockbadge{background:var(--ink);border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:12px;letter-spacing:.08em;color:var(--cream);display:flex;gap:8px;align-items:center}
+  .res.locked .rf .btn{pointer-events:auto}
+  .empty{color:var(--dim);font-size:14px;padding:30px;text-align:center;border:1px dashed var(--line);border-radius:var(--r)}
+
+  /* ---------- Profile form ---------- */
+  .form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+  .field{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .field label{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+  .field input,.field select{background:var(--tile);border:1px solid var(--line);border-radius:9px;padding:11px 13px;width:100%;min-width:0}
+  .field input:disabled,.field select:disabled{opacity:1;color:var(--muted);background:#0f1124;border-color:var(--line-soft)}
+  .field .hint{font-size:12px;color:var(--dim)}
+  .field.full{grid-column:1/-1}
+  .form-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:6px}
+  .err{color:var(--bad);font-size:13px;min-height:1em}
+
+  /* ---------- Agreement ---------- */
+  .doc{background:var(--tile);border-radius:10px;padding:24px 26px;max-height:380px;overflow:auto;border:1px solid var(--line-soft)}
+  .doc h3{font-size:16px;margin:20px 0 6px;color:var(--cream)}
+  .doc h3:first-child{margin-top:0}
+  .doc p{margin:0;color:var(--text);font-size:14px;max-width:68ch}
+  .checks{display:flex;flex-direction:column;gap:12px;margin:22px 0}
+  .ck{display:flex;gap:12px;align-items:flex-start;font-size:14px;cursor:pointer}
+  .ck input{width:18px;height:18px;margin-top:2px;accent-color:#dfdcc9;flex:0 0 auto}
+  .sigwrap{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+  .pad{position:relative;background:var(--ink);border:1px dashed var(--line);border-radius:10px;height:170px;touch-action:none}
+  .pad canvas{position:absolute;inset:0;width:100%;height:100%;border-radius:10px;cursor:crosshair}
+  .pad .ph{position:absolute;left:18px;right:18px;bottom:36px;border-bottom:1px solid var(--line);pointer-events:none}
+  .pad .phx{position:absolute;left:18px;bottom:40px;font-family:var(--display);color:var(--dim);pointer-events:none}
+  .pad .phh{position:absolute;inset:0;display:grid;place-items:center;color:var(--dim);font-size:13px;pointer-events:none}
+  .signed-rec{display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:center}
+  .signed-rec img{background:var(--ink);border-radius:10px;border:1px solid var(--line);width:240px;max-width:100%;height:auto}
+
+  /* ---------- Admin ---------- */
+  .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+  .stat{background:var(--box);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px}
+  .stat .l{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .stat .v{font-family:var(--display);font-size:32px;margin-top:4px}
+  .tablewrap{overflow-x:auto;border-radius:10px;border:1px solid var(--line-soft)}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:760px}
+  th{background:var(--tile);text-align:left;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:12px 14px}
+  td{padding:13px 14px;border-top:1px solid var(--line-soft);vertical-align:middle}
+  td .nm b{display:block}
+  td .nm span{font-size:12px;color:var(--dim)}
+  .act{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  .confirm{display:flex;gap:6px;align-items:center;justify-content:flex-end;flex-wrap:wrap;font-size:12.5px;color:var(--bad)}
+
+  /* ---------- Modal ---------- */
+  .scrim{position:fixed;inset:0;background:rgba(4,5,12,.85);z-index:50;display:grid;place-items:center;padding:20px}
+  .modal{background:var(--box);border:1px solid var(--line);border-radius:14px;width:min(760px,100%);max-height:calc(100vh - 40px);display:flex;flex-direction:column;overflow:hidden}
+  .modal.sm{width:min(460px,100%)}
+  .mh{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 22px;border-bottom:1px solid var(--line-soft)}
+  .mh h2{font-size:18px}
+  .mh .x{background:none;border:1px solid var(--line);border-radius:8px;width:34px;height:34px;color:var(--muted);font-size:18px;line-height:1}
+  .mb{padding:22px;overflow:auto}
+  .mf{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 22px;border-top:1px solid var(--line-soft);flex-wrap:wrap}
+  .page{position:relative;background:#f8f7f3;color:#0c0e1e;border-radius:6px;aspect-ratio:210/297;max-width:100%;width:420px;margin:0 auto;padding:36px 34px;overflow:hidden}
+  .page .pw{font-family:var(--logo);letter-spacing:.38em;font-size:11px;color:#4a4f6a}
+  .page h3{font-size:22px;margin:26px 0 8px;color:#0c0e1e}
+  .page .pl{height:8px;border-radius:4px;background:#d6d4ca;margin:9px 0}
+  .page .sec{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#4a4f6a;margin-top:22px}
+  .wm{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+  .wm span{transform:rotate(-32deg);font-size:15px;letter-spacing:.14em;color:rgba(12,14,30,.14);white-space:nowrap;font-weight:700}
+  .slots{display:flex;flex-direction:column;gap:10px}
+  .slot{background:var(--tile);border:1px solid var(--line);border-radius:10px;padding:13px 16px;text-align:left;display:flex;justify-content:space-between;gap:10px}
+  .slot[aria-pressed="true"]{border-color:var(--cream);box-shadow:inset 0 0 0 1px var(--cream)}
+  .slot span{color:var(--dim);font-size:13px}
+
+  /* ---------- Toast & flag ---------- */
+  .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:var(--callout);color:var(--ink);padding:12px 20px;border-radius:999px;font-size:13.5px;font-weight:700;opacity:0;transition:.25s;z-index:60;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  .mockflag{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:15;display:flex;gap:8px;align-items:center;background:var(--ink);border:1px solid var(--line);border-radius:999px;padding:5px 6px 5px 14px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+  .mockflag button{background:var(--tile);border:0;border-radius:999px;padding:5px 10px;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--cream)}
+
+  footer.foot{max-width:1180px;margin:0 auto;padding-inline:24px;padding-block:28px 60px;border-top:1px solid var(--line-soft);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--dim);font-size:12.5px}
+  footer.foot .tag{font-family:Georgia,'Times New Roman',serif;font-weight:700;color:var(--cream);font-size:15px}
+
+  @media (max-width:980px){
+    .grid2,.sigwrap,.signed-rec{grid-template-columns:1fr}
+    .res-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .me-t{display:none}
+  }
+  @media (max-width:620px){
+    .top-in{padding:12px 16px;gap:12px}
+    .tabs{order:3;flex-basis:100%}
+    .top-r{margin-left:auto}
+    main,footer.foot{padding-inline:16px}
+    .box{padding:20px}
+    .kv,.form,.res-grid{grid-template-columns:1fr}
+    .step{grid-template-columns:30px 1fr;}
+    .step .btn{grid-column:2;justify-self:start}
+    .page{padding:26px 22px}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="wordmark">VANTEDGE<small>Member Portal</small></div>
+    <nav class="tabs" role="tablist" id="tabs" aria-label="Portal sections"></nav>
+    <div class="top-r">
+      <div class="viewswitch" role="group" aria-label="View as">
+        <button type="button" id="vAnalyst" aria-pressed="true">Member</button>
+        <button type="button" id="vAdmin" aria-pressed="false">Admin</button>
+      </div>
+      <button type="button" class="me" id="meBtn" aria-label="Open my profile">
+        <span class="av" id="meAv">AT</span>
+        <span class="me-t"><b id="meName">Aiden Tan</b><span id="meRole">M&amp;A Analyst</span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main"></main>
+
+<footer class="foot">
+  <span class="tag">Earn Your AdVANTEDGE</span>
+  <span>Vantedge: a global finance ecosystem · Access is personal and ends when you leave the team</span>
+</footer>
+
+<div class="mockflag">Mock · sample data <button type="button" id="resetBtn">Reset demo</button></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="modalRoot"></div>
+
+<script>
+(function(){
+  /* ============ STATE ============ */
+  const CONTACTS = {
+    'M&A': [['Madhav','Co-Founder · Co-Head of M&A Advisory'],['Diego','Head of M&A']],
+    'Equity Research': [['Mustafa','Head of Equity Research'],['Andrew','Editor-in-Chief']],
+    'DCM': [['Aniya','Co-Founder · Head of DCM']],
+    'ECM': [['Xuenna','Founder & Executive Director']],
+    'Growth': [['Zhannel','Head of Marketing & Growth'],['Charles','Deputy Head of Growth & Strategy']]
+  };
+  const DIVISIONS = {Research:['M&A','Equity Research','DCM','ECM'], Growth:['Growth']};
+  const ROLES = {Research:['Analyst','Senior Analyst','Head of Division'], Growth:['Partnerships & Outreach','Marketing & Social','Growth & Strategy']};
+
+  const RESOURCES = [
+    {id:'ma-readme', t:'M&A Analyst README', d:'How the three deliverables and progression gates fit together. Start here.', div:'M&A', type:'Handbook', pages:8, secs:['The three deliverables','Progression gates','Your first report']},
+    {id:'ma-hb', t:'M&A Analyst Handbook', d:'The three research lenses: Advisory Pitch, Deconstruct the Deal, Industry Flow Report.', div:'M&A', type:'Handbook', pages:30, secs:['The three lenses','Synergy risk-weighting','Research cycle workflow']},
+    {id:'ma-menu', t:'M&A Content Menu', d:'Short-form LinkedIn formats, unlocked after your first published report.', div:'M&A', type:'Handbook', pages:12, secs:['Formats','House style','Approval flow']},
+    {id:'ma-tpl', t:'M&A Report Template', d:'Publication-ready A4 template that all three lenses share.', div:'M&A', type:'Template', pages:16, secs:['Cover','Executive summary','Valuation approach']},
+    {id:'fm-hb', t:'Financial Modeling Handbook', d:'3-statement, comps, DCF, LBO and merger models. Unlocked after your third report.', div:'M&A', type:'Handbook', pages:40, secs:['3-statement model','DCF','LBO']},
+    {id:'er-readme', t:'ER README', d:'One flagship deliverable, two tracks: solo or team.', div:'Equity Research', type:'Handbook', pages:8, secs:['The flagship report','Track A: solo','Track B: team']},
+    {id:'er-hb', t:'ER Research Handbook', d:'From historicals to forecasting, DCF, comps and the final report.', div:'Equity Research', type:'Handbook', pages:28, secs:['Historicals','Forecasting','Writing the thesis']},
+    {id:'er-wf', t:'ER Workflow Document', d:'Topic approval, division review, peer review and final sign-off.', div:'Equity Research', type:'Process', pages:6, secs:['Review owners','Timeline','Sign-off']},
+    {id:'dcm-hb', t:'DCM Onboarding Pack', d:'Credit basics, bond pricing and how DCM reports are structured.', div:'DCM', type:'Handbook', pages:14, secs:['Credit analysis','Pricing & spreads','Report structure']},
+    {id:'ecm-hb', t:'ECM Starter Guide', d:'IPO process, book-building and follow-on offerings.', div:'ECM', type:'Handbook', pages:12, secs:['IPO process','Book-building','Follow-ons']},
+    {id:'gr-onb', t:'Growth Division Onboarding', d:'Team culture, key contacts and who to go to for what.', div:'Growth', type:'Handbook', pages:6, secs:['How we work','Contacts','Your first week']},
+    {id:'gr-play', t:'Partnerships & Outreach Playbook', d:'Synergy mapping, outreach mechanics and starter message templates.', div:'Growth', type:'Playbook', pages:18, secs:['Synergy rule','Five partner types','Outreach templates']},
+    {id:'all-onb', t:'Analyst Onboarding Guide', d:'Group chats, core contacts, choosing your lens and the onboarding call.', div:'All', type:'Guide', pages:5, secs:['Group chats','Core contacts','Onboarding call']},
+    {id:'all-brand', t:'Vantedge Brand Assets', d:'Colours, wordmark, typography and voice for anything you publish.', div:'All', type:'Brand', pages:10, secs:['Colour families','Typography','Voice']},
+    {id:'all-ppt', t:'Research PPT Formatting Rules', d:'Playfair Display headers, Lato body, sources in italics at the bottom.', div:'All', type:'Guide', pages:3, secs:['Fonts','Backgrounds','Citations']},
+    {id:'all-rec', t:'Training Session Recordings', d:'Recorded division trainings. View in the portal only.', div:'All', type:'Recordings', pages:4, secs:['M&A curriculum','ER curriculum','Q&A sessions']}
+  ];
+
+  const SLOTS = ['Thu 2 Oct · 7:00 pm MYT','Sat 4 Oct · 3:00 pm MYT','Mon 6 Oct · 8:30 pm MYT'];
+
+  function freshState(){
+    return {
+      view:'member', tab:'dashboard', filter:'mine',
+      signed:false, signedAt:null, sig:null, revoked:false,
+      profileConfirmed:false, handbookRead:false, call:null,
+      editing:false, confirmRevoke:null,
+      profile:{
+        name:'Aiden Tan', preferred:'Aiden', memberId:'VT-0417',
+        vertical:'Research', role:'Analyst', division:'M&A',
+        email:'aiden.tan@example.com', phone:'+60 12-345 6789',
+        university:'Monash University Malaysia', chapter:'Global remote team',
+        linkedin:'linkedin.com/in/aiden-tan-sample', timezone:'Asia/Kuala_Lumpur (UTC+8)',
+        start:'22 Sep 2026'
+      },
+      others:[
+        {name:'Priya Nair', id:'VT-0391', vertical:'Research', role:'Analyst', division:'Equity Research', chapter:'Bocconi', status:'active', signed:'18 Sep 2026'},
+        {name:'Lucas Moreau', id:'VT-0412', vertical:'Research', role:'Analyst', division:'DCM', chapter:'Global remote team', status:'pending', signed:null},
+        {name:'Sofia Rinaldi', id:'VT-0376', vertical:'Growth', role:'Marketing & Social', division:'Growth', chapter:'Bocconi', status:'active', signed:'9 Sep 2026'},
+        {name:'Hannah Clarke', id:'VT-0420', vertical:'Growth', role:'Partnerships & Outreach', division:'Growth', chapter:'Bath', status:'pending', signed:null},
+        {name:'Omar Haddad', id:'VT-0288', vertical:'Research', role:'Analyst', division:'M&A', chapter:'Global remote team', status:'revoked', signed:'2 Aug 2026', note:'Left the team 20 Sep 2026'}
+      ]
+    };
+  }
+  let S = freshState();
+
+  /* ============ HELPERS ============ */
+  const $ = s => document.querySelector(s);
+  const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const initials = n => n.split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join('');
+  const hasAccess = () => S.signed && !S.revoked;
+  const myStatus = () => S.revoked ? 'revoked' : (S.signed ? 'active' : 'pending');
+  const roleLabel = p => p.vertical === 'Research' ? `${p.division} ${p.role}` : p.role;
+  function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('on'),2600); }
+  function statusChip(st){
+    if(st==='active') return '<span class="chip ok"><span class="d"></span>Active</span>';
+    if(st==='pending') return '<span class="chip warn"><span class="d"></span>Awaiting signature</span>';
+    return '<span class="chip bad"><span class="d"></span>Access revoked</span>';
+  }
+  function nowStamp(){
+    const d = new Date();
+    const date = d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+    const time = d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+    return `${date}, ${time}`;
+  }
+
+  /* ============ TABS ============ */
+  const MEMBER_TABS = [['dashboard','Dashboard'],['profile','My Profile'],['resources','Resources'],['agreement','Agreement']];
+  const ADMIN_TABS = [['members','Members'],['library','Library access']];
+
+  function renderTabs(){
+    const list = S.view==='admin' ? ADMIN_TABS : MEMBER_TABS;
+    $('#tabs').innerHTML = list.map(([k,l]) => {
+      const lock = (k==='resources' && !hasAccess()) ? '<span class="lk" aria-hidden="true">🔒</span>' : '';
+      return `<button type="button" class="tab" role="tab" data-tab="${k}" aria-selected="${S.tab===k}">${l}${lock}</button>`;
+    }).join('');
+    $('#vAnalyst').setAttribute('aria-pressed', S.view==='member');
+    $('#vAdmin').setAttribute('aria-pressed', S.view==='admin');
+    $('#meAv').textContent = initials(S.profile.name);
+    $('#meName').textContent = S.profile.name;
+    $('#meRole').textContent = roleLabel(S.profile);
+  }
+  function go(tab){ S.tab = tab; S.editing = false; render(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+  /* ============ ACCESS BANNER ============ */
+  function banner(){
+    if(S.revoked) return `<div class="callout revoked"><div><b>Your access has been removed</b><p>Your membership has ended, so handbooks, templates and recordings are no longer available. Work you published under your name stays credited to you. If this is a mistake, email the founding team.</p></div></div>`;
+    if(!S.signed) return `<div class="callout"><div><b>Sign the Member Agreement to unlock your resources</b><p>Your handbooks, templates and training recordings open inside this portal once you sign. Takes about two minutes.</p></div><button type="button" class="btn primary" data-go="agreement">Review and sign</button></div>`;
+    return '';
+  }
+
+  /* ============ DASHBOARD ============ */
+  function dashboard(){
+    const p = S.profile;
+    const steps = [
+      {done:S.profileConfirmed, t:'Confirm your details', s:S.profileConfirmed?'Details confirmed':'Check your email, phone and university are right', btn:S.profileConfirmed?'Edit':'Review', go:'profile'},
+      {done:S.signed, t:'Sign the Member Agreement', s:S.signed?`Signed ${S.signedAt}`:'Unlocks every handbook and template', btn:S.signed?'View':'Sign', go:'agreement'},
+      {done:S.handbookRead, t:`Read the ${p.division==='Growth'?'Growth onboarding':p.division+' handbook'}`, s:S.handbookRead?'Opened in the portal':(hasAccess()?'Open it from Resources':'Locked until you sign'), btn:'Open', go:'resources', dis:!hasAccess()},
+      {done:!!S.call, t:'Book your onboarding call', s:S.call?`Booked for ${S.call}`:'Meet your division leads', btn:S.call?'Change':'Book', act:'book'}
+    ];
+    const done = steps.filter(x=>x.done).length;
+    const contacts = [['Xuenna','Founder & Executive Director'],['Mariam','Co-Head of M&A · Bocconi Manager'],['Zhannel','VP of Global Marketing & Operations']];
+    const mine = RESOURCES.filter(r => r.div===p.division || r.div==='All').slice(0,3);
+    return `
+      <div class="head">
+        <div><div class="eyebrow">Welcome back</div><h1>Good to see you, ${esc(p.preferred||p.name.split(' ')[0])}.</h1>
+        <p>Everything for your role lives here. Materials open inside the portal, so nothing sits in a personal Drive after you leave.</p></div>
+        ${statusChip(myStatus())}
+      </div>
+      ${banner()}
+      <div class="grid2">
+        <section class="box" aria-labelledby="pc-h">
+          <div class="box-h"><div><h2 id="pc-h">Member details</h2><p>Set by Vantedge when you joined. Contact details are yours to update.</p></div>
+          <button type="button" class="btn sm" data-go="profile">Edit details</button></div>
+          <div class="pid"><span class="av">${initials(p.name)}</span><div><h2>${esc(p.name)}</h2><div class="sub">${esc(roleLabel(p))} · ${esc(p.chapter)}</div></div></div>
+          <dl class="kv" style="margin:0">
+            <div><dt>Vertical</dt><dd><b>${esc(p.vertical)}</b></dd></div>
+            <div><dt>Division</dt><dd><b>${esc(p.division)}</b></dd></div>
+            <div><dt>Role</dt><dd>${esc(p.role)}</dd></div>
+            <div><dt>Member ID</dt><dd class="num">${esc(p.memberId)}</dd></div>
+            <div><dt>Email</dt><dd>${esc(p.email)}</dd></div>
+            <div><dt>Phone</dt><dd class="num">${esc(p.phone)}</dd></div>
+            <div><dt>University</dt><dd>${esc(p.university)}</dd></div>
+            <div><dt>Joined</dt><dd class="num">${esc(p.start)}</dd></div>
+          </dl>
+        </section>
+        <div class="view" style="gap:24px">
+          <section class="box" aria-labelledby="ob-h">
+            <div class="box-h" style="margin-bottom:8px"><div><h2 id="ob-h">Onboarding</h2></div><span class="chip cream num">${done} of 4 done</span></div>
+            <div class="prog"><span style="width:${done*25}%"></span></div>
+            <ol class="steps">${steps.map((x,i)=>`
+              <li class="step ${x.done?'done':''}"><span class="n">${x.done?'✓':i+1}</span>
+                <div><div class="t">${x.t}</div><div class="s">${esc(x.s)}</div></div>
+                <button type="button" class="btn sm ghost" ${x.act?`data-act="${x.act}"`:`data-go="${x.go}"`} ${x.dis?'disabled':''}>${x.btn}</button>
+              </li>`).join('')}</ol>
+          </section>
+          <section class="box" aria-labelledby="ct-h">
+            <div class="box-h" style="margin-bottom:14px"><h2 id="ct-h">Your contacts</h2></div>
+            <div class="contacts">${contacts.map(([n,r])=>`
+              <div class="ct"><span class="av">${initials(n)}</span><div class="who"><b>${esc(n)}</b><span>${esc(r)}</span></div>
+              <button type="button" class="btn sm ghost" data-msg="${esc(n)}">Message</button></div>`).join('')}</div>
+          </section>
+        </div>
+      </div>
+      <section aria-labelledby="rp-h" class="view" style="gap:16px">
+        <div class="box-h" style="margin:0"><div><h2 id="rp-h" style="font-size:21px">Your division materials</h2></div><button type="button" class="btn sm" data-go="resources">See all resources</button></div>
+        <div class="res-grid">${mine.map(resCard).join('')}</div>
+      </section>`;
+  }
+
+  /* ============ RESOURCES ============ */
+  function resCard(r){
+    const locked = !hasAccess();
+    const lockLabel = S.revoked ? 'Access removed' : 'Sign to unlock';
+    return `<article class="res ${locked?'locked':''}">
+      <div class="rtype"><span>${esc(r.type)} · ${esc(r.div==='All'?'All members':r.div)}</span><span class="num">${r.pages} pp</span></div>
+      <h3>${esc(r.t)}</h3><p>${esc(r.d)}</p>
+      <div class="rf"><span>${locked?'🔒 Locked':'View only · watermarked'}</span>
+      ${locked ? (S.revoked?'':`<button type="button" class="btn sm" data-go="agreement">Unlock</button>`) : `<button type="button" class="btn sm primary" data-open="${r.id}">Open</button>`}</div>
+      ${locked?`<div class="lockover"><span class="lockbadge">🔒 ${lockLabel}</span></div>`:''}
+    </article>`;
+  }
+  function resources(){
+    const p = S.profile;
+    const fs = [['mine','For your role'],['all','All'],['M&A','M&A'],['Equity Research','Equity Research'],['DCM','DCM'],['ECM','ECM'],['Growth','Growth'],['All','General']];
+    let list = RESOURCES;
+    if(S.filter==='mine') list = RESOURCES.filter(r=>r.div===p.division||r.div==='All');
+    else if(S.filter!=='all') list = RESOURCES.filter(r=>r.div===S.filter);
+    return `
+      <div class="head"><div><div class="eyebrow">Library</div><h1>Handbooks and materials</h1>
+      <p>Everything opens in the portal as view-only, watermarked with your name and member ID. There is no shared Drive to keep access to once you leave.</p></div>
+      ${hasAccess()?'<span class="chip ok"><span class="d"></span>Unlocked</span>':'<span class="chip warn"><span class="d"></span>Locked</span>'}</div>
+      ${banner()}
+      <div class="filters" role="group" aria-label="Filter resources">${fs.map(([k,l])=>`<button type="button" class="fbtn" data-filter="${esc(k)}" aria-pressed="${S.filter===k}">${l}</button>`).join('')}</div>
+      ${list.length?`<div class="res-grid">${list.map(resCard).join('')}</div>`:'<div class="empty">Nothing in this category yet.</div>'}`;
+  }
+
+  /* ============ PROFILE ============ */
+  function profile(){
+    const p = S.profile, e = S.editing;
+    const f = (id,label,val,opts={}) => `<div class="field ${opts.full?'full':''}"><label for="f-${id}">${label}</label>
+      <input id="f-${id}" name="${id}" value="${esc(val)}" ${(!e||opts.lock)?'disabled':''} ${opts.type?`type="${opts.type}"`:''} autocomplete="off">
+      ${opts.hint?`<span class="hint">${opts.hint}</span>`:''}</div>`;
+    const sel = (id,label,val,options) => `<div class="field"><label for="f-${id}">${label}</label>
+      <select id="f-${id}" name="${id}" ${!e?'disabled':''}>${options.map(o=>`<option ${o===val?'selected':''}>${esc(o)}</option>`).join('')}</select></div>`;
+    return `
+      <div class="head"><div><div class="eyebrow">My Profile</div><h1>${esc(p.name)}</h1>
+      <p>Your role, vertical and division are set by Vantedge. Ask the founding team if any of those are wrong.</p></div>
+      ${e?'':'<button type="button" class="btn" id="editBtn">Edit details</button>'}</div>
+      <form class="box" id="pform" novalidate>
+        <div class="box-h"><div><h2>Role at Vantedge</h2><p>Locked. Changes go through the founding team.</p></div><span class="chip cream">Set by Vantedge</span></div>
+        <div class="form">
+          ${f('name','Full legal name',p.name,{lock:true})}
+          ${f('memberId','Member ID',p.memberId,{lock:true})}
+          ${f('vertical','Vertical',p.vertical,{lock:true})}
+          ${f('division','Division',p.division,{lock:true})}
+          ${f('role','Role',p.role,{lock:true})}
+          ${f('start','Joined',p.start,{lock:true})}
+        </div>
+        <div class="box-h" style="margin-top:32px"><div><h2>Your details</h2><p>${e?'Update anything that has changed, then save.':'Tap Edit details to change these.'}</p></div></div>
+        <div class="form">
+          ${f('preferred','Preferred name',p.preferred)}
+          ${f('email','Email',p.email,{type:'email',hint:'Where offers, reminders and access notices go.'})}
+          ${f('phone','Phone (with country code)',p.phone,{type:'tel',hint:'Used to add you to your division group chat.'})}
+          ${f('university','University',p.university)}
+          ${sel('chapter','Chapter',p.chapter,['Global remote team','Bocconi','Bath'])}
+          ${f('timezone','Time zone',p.timezone)}
+          ${f('linkedin','LinkedIn',p.linkedin,{full:true})}
+        </div>
+        ${e?`<div class="err" id="perr" style="margin-top:14px"></div><div class="form-actions"><button type="button" class="btn ghost" id="cancelBtn">Cancel</button><button type="submit" class="btn primary">Save changes</button></div>`:''}
+      </form>
+      ${S.profileConfirmed||e?'':`<div class="callout"><div><b>Is everything right?</b><p>Confirm your details once so the team can reach you.</p></div><button type="button" class="btn primary" id="confirmBtn">Confirm details</button></div>`}`;
+  }
+
+  /* ============ AGREEMENT ============ */
+  function agreement(){
+    const p = S.profile;
+    const clauses = `
+      <h3>1. Vantedge materials</h3><p>Handbooks, templates, training recordings and internal documents belong to Vantedge. You get access to them for as long as you are a member of the team.</p>
+      <h3>2. Keep them inside the portal</h3><p>Do not download, screenshot, forward, re-upload or share any material outside this portal. Every page is watermarked with your name and member ID.</p>
+      <h3>3. Access ends when you leave</h3><p>When your membership ends, whether you resign or are offboarded, your portal access is removed the same day. Nothing is left in a shared Drive for you to keep.</p>
+      <h3>4. Your published work</h3><p>Reports and content you author stay credited to you with your byline, including after you leave. Vantedge may keep publishing them on its website and channels.</p>
+      <h3>5. Conduct</h3><p>Represent Vantedge professionally in group chats, calls and outreach. Do not speak on behalf of Vantedge to partners or press without approval.</p>
+      <h3>6. Your data</h3><p>We store your contact details to run the team. We remove them on request after you leave, apart from your name on published work.</p>`;
+    if(S.signed){
+      return `
+        <div class="head"><div><div class="eyebrow">Member Agreement · v1.0</div><h1>You have signed</h1>
+        <p>Signed by ${esc(p.name)} on ${esc(S.signedAt)}. Your resources are unlocked.</p></div>${statusChip(myStatus())}</div>
+        ${banner()}
+        <section class="box"><div class="signed-rec">
+          <img src="${S.sig}" alt="Your signature">
+          <dl class="kv" style="margin:0">
+            <div><dt>Signed by</dt><dd>${esc(p.name)}</dd></div>
+            <div><dt>Member ID</dt><dd class="num">${esc(p.memberId)}</dd></div>
+            <div><dt>Date and time</dt><dd class="num">${esc(S.signedAt)}</dd></div>
+            <div><dt>Version</dt><dd>Member Agreement v1.0</dd></div>
+          </dl></div></section>
+        <section class="box"><div class="box-h"><h2>What you agreed to</h2></div><div class="doc">${clauses}</div>
+        <div class="form-actions" style="margin-top:18px">${S.revoked?'':'<button type="button" class="btn primary" data-go="resources">Go to resources</button>'}</div></section>`;
+    }
+    return `
+      <div class="head"><div><div class="eyebrow">Member Agreement · v1.0</div><h1>Read, tick, sign</h1>
+      <p>Signing unlocks your handbooks, templates and recordings. It also means access closes automatically when you leave.</p></div>${statusChip(myStatus())}</div>
+      <section class="box"><div class="box-h"><div><h2>The agreement</h2><p>Six short clauses. Scroll to read them all.</p></div></div>
+        <div class="doc" tabindex="0" aria-label="Agreement text">${clauses}</div></section>
+      <form class="box" id="sform" novalidate>
+        <div class="box-h"><div><h2>Sign</h2><p>Use your finger, trackpad or mouse.</p></div></div>
+        <div class="checks">
+          <label class="ck"><input type="checkbox" id="c1"> I have read the Member Agreement and agree to its terms.</label>
+          <label class="ck"><input type="checkbox" id="c2"> I understand my access to Vantedge materials ends when I leave the team.</label>
+        </div>
+        <div class="sigwrap">
+          <div class="field"><label for="f-typed">Type your full name</label>
+            <input id="f-typed" placeholder="${esc(p.name)}" autocomplete="off">
+            <span class="hint">Must match the name on your profile: ${esc(p.name)}</span></div>
+          <div class="field"><label>Signature</label>
+            <div class="pad" id="pad"><span class="ph"></span><span class="phx">×</span><span class="phh" id="padHint">Sign here</span><canvas id="sig" aria-label="Signature pad"></canvas></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span class="hint num">${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</span><button type="button" class="btn sm ghost" id="clearSig">Clear</button></div></div>
+        </div>
+        <div class="err" id="serr" style="margin-top:16px"></div>
+        <div class="form-actions"><button type="submit" class="btn primary">Sign and unlock resources</button></div>
+      </form>`;
+  }
+  let sigStrokes = 0;
+  function setupPad(){
+    const c = $('#sig'); if(!c) return;
+    const pad = $('#pad'); const ctx = c.getContext('2d');
+    const size = () => { const r = pad.getBoundingClientRect(); const dpr = window.devicePixelRatio||1;
+      c.width = r.width*dpr; c.height = r.height*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+      ctx.lineWidth = 2.2; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.strokeStyle='#dfdcc9'; };
+    size(); sigStrokes = 0;
+    let drawing=false, last=null;
+    const pt = ev => { const r=c.getBoundingClientRect(); return {x:ev.clientX-r.left, y:ev.clientY-r.top}; };
+    c.addEventListener('pointerdown', ev => { drawing=true; last=pt(ev); c.setPointerCapture(ev.pointerId); $('#padHint').hidden=true; ctx.beginPath(); ctx.arc(last.x,last.y,1,0,Math.PI*2); ctx.fillStyle='#dfdcc9'; ctx.fill(); sigStrokes++; });
+    c.addEventListener('pointermove', ev => { if(!drawing) return; const p=pt(ev); ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke(); last=p; });
+    const end = () => { drawing=false; };
+    c.addEventListener('pointerup', end); c.addEventListener('pointercancel', end); c.addEventListener('pointerleave', end);
+    $('#clearSig').onclick = () => { ctx.clearRect(0,0,c.width,c.height); sigStrokes=0; $('#padHint').hidden=false; };
+  }
+
+  /* ============ ADMIN ============ */
+  function allMembers(){
+    const p = S.profile;
+    return [{name:p.name,id:p.memberId,vertical:p.vertical,role:p.role,division:p.division,chapter:p.chapter,status:myStatus(),signed:S.signed?S.signedAt:null,you:true}].concat(S.others);
+  }
+  function members(){
+    const all = allMembers();
+    const c = st => all.filter(m=>m.status===st).length;
+    return `
+      <div class="head"><div><div class="eyebrow">Admin · Founding team</div><h1>Members and access</h1>
+      <p>Revoke access the day someone leaves. Their portal login stops working and every locked material closes, with no Drive links left behind.</p></div></div>
+      <div class="stats">
+        <div class="stat"><div class="l">Total members</div><div class="v num">${all.length}</div></div>
+        <div class="stat"><div class="l">Active</div><div class="v num" style="color:var(--ok)">${c('active')}</div></div>
+        <div class="stat"><div class="l">Awaiting signature</div><div class="v num" style="color:var(--warn)">${c('pending')}</div></div>
+        <div class="stat"><div class="l">Access revoked</div><div class="v num" style="color:var(--bad)">${c('revoked')}</div></div>
+      </div>
+      <section class="box"><div class="box-h"><div><h2>Team directory</h2><p>Aiden Tan is the sample member you see in Member view. Changes here show up there.</p></div></div>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Member</th><th>Vertical</th><th>Division · Role</th><th>Chapter</th><th>Agreement</th><th>Status</th><th style="text-align:right">Access</th></tr></thead>
+          <tbody>${all.map(m=>{
+            const act = S.confirmRevoke===m.id
+              ? `<div class="confirm">Remove access?<button type="button" class="btn sm danger" data-revoke-yes="${m.id}">Revoke</button><button type="button" class="btn sm ghost" data-revoke-no>Cancel</button></div>`
+              : `<div class="act">${m.status==='revoked'
+                  ? `<button type="button" class="btn sm" data-restore="${m.id}">Restore</button>`
+                  : `${m.status==='pending'?`<button type="button" class="btn sm ghost" data-remind="${esc(m.name)}">Remind</button>`:''}<button type="button" class="btn sm danger" data-revoke="${m.id}">Revoke</button>`}</div>`;
+            return `<tr><td><div class="nm"><b>${esc(m.name)}${m.you?' <span class="chip cream" style="margin-left:6px">Sample</span>':''}</b><span class="num">${esc(m.id)}${m.note?' · '+esc(m.note):''}</span></div></td>
+              <td>${esc(m.vertical)}</td><td>${esc(m.division)} · ${esc(m.role)}</td><td>${esc(m.chapter)}</td>
+              <td class="num">${m.signed?esc(m.signed):'<span style="color:var(--dim)">Not signed</span>'}</td>
+              <td>${statusChip(m.status)}</td><td>${act}</td></tr>`;}).join('')}</tbody>
+        </table></div></section>`;
+  }
+  function library(){
+    const all = allMembers();
+    const divs = ['M&A','Equity Research','DCM','ECM','Growth','All'];
+    return `
+      <div class="head"><div><div class="eyebrow">Admin · Library</div><h1>Who can open what</h1>
+      <p>Materials are matched to each member's division. General materials go to everyone who has signed.</p></div></div>
+      <div class="res-grid">${divs.map(d=>{
+        const items = RESOURCES.filter(r=>r.div===d);
+        const who = all.filter(m=>m.status==='active' && (d==='All' || m.division===d));
+        return `<article class="res"><div class="rtype"><span>${d==='All'?'General':esc(d)}</span><span class="num">${items.length} items</span></div>
+          <h3>${d==='All'?'All members':esc(d)}</h3>
+          <p>${items.map(i=>esc(i.t)).join(', ')}</p>
+          <div class="rf"><span>${who.length?who.map(w=>esc(w.name)).join(', '):'No active members'}</span><span class="chip ${who.length?'ok':''} num">${who.length} with access</span></div></article>`;
+      }).join('')}</div>`;
+  }
+
+  /* ============ MODALS ============ */
+  let viewer = null;
+  function openViewer(id){
+    const r = RESOURCES.find(x=>x.id===id); if(!r||!hasAccess()) return;
+    viewer = {r, page:0};
+    if(r.div===S.profile.division || (S.profile.division==='Growth' && r.id==='gr-onb')) { if(!S.handbookRead){ S.handbookRead=true; } }
+    drawViewer();
+  }
+  function drawViewer(){
+    const {r,page} = viewer; const total = r.secs.length+1; const p = S.profile;
+    const body = page===0
+      ? `<div class="pw">VANTEDGE</div><h3>${esc(r.t)}</h3><div class="sec">${esc(r.type)} · ${esc(r.div==='All'?'All members':r.div)}</div>
+         <div class="pl" style="width:88%;margin-top:18px"></div><div class="pl" style="width:74%"></div>
+         <div class="sec" style="margin-top:34px">Contents</div>${r.secs.map((s,i)=>`<div style="font-size:13px;margin-top:8px">${i+1}. ${esc(s)}</div>`).join('')}`
+      : `<div class="pw">VANTEDGE</div><div class="sec">Section ${page}</div><h3>${esc(r.secs[page-1])}</h3>
+         ${[92,86,95,70,0,90,82,88,64,0,93,78].map(w=>w?`<div class="pl" style="width:${w}%"></div>`:'<div style="height:14px"></div>').join('')}`;
+    modal(`
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="vh">
+        <div class="mh"><div><h2 id="vh">${esc(r.t)}</h2><div class="hint" style="color:var(--dim);font-size:12.5px">View only · downloads off · preview pages</div></div><button type="button" class="x" data-close aria-label="Close">×</button></div>
+        <div class="mb" style="background:var(--tile)"><div class="page">${body}<div class="wm"><span>${esc(p.name)} · ${esc(p.memberId)} · Vantedge confidential</span></div></div></div>
+        <div class="mf"><button type="button" class="btn sm" data-page="-1" ${page===0?'disabled':''}>Previous</button>
+          <span class="num" style="color:var(--muted);font-size:13px">Page ${page+1} of ${total}</span>
+          <button type="button" class="btn sm" data-page="1" ${page===total-1?'disabled':''}>Next</button></div>
+      </div>`);
+  }
+  let pickedSlot = null;
+  function openBooking(){
+    pickedSlot = S.call;
+    modal(`
+      <div class="modal sm" role="dialog" aria-modal="true" aria-labelledby="bh">
+        <div class="mh"><h2 id="bh">Book your onboarding call</h2><button type="button" class="x" data-close aria-label="Close">×</button></div>
+        <div class="mb"><p style="margin:0 0 16px;color:var(--muted);font-size:14px">30 minutes with your division leads over Google Meet. Pick a slot.</p>
+          <div class="slots">${SLOTS.map(s=>`<button type="button" class="slot" data-slot="${esc(s)}" aria-pressed="${pickedSlot===s}">${esc(s)}<span>30 min</span></button>`).join('')}</div></div>
+        <div class="mf"><button type="button" class="btn ghost" data-close>Cancel</button><button type="button" class="btn primary" id="bookYes" ${pickedSlot?'':'disabled'}>Confirm slot</button></div>
+      </div>`);
+  }
+  function openMessage(name){
+    modal(`
+      <div class="modal sm" role="dialog" aria-modal="true" aria-labelledby="mh2">
+        <div class="mh"><h2 id="mh2">Message ${esc(name)}</h2><button type="button" class="x" data-close aria-label="Close">×</button></div>
+        <form class="mb" id="mform" novalidate><div class="field"><label for="f-msg">Your message</label>
+          <textarea id="f-msg" rows="5" style="background:var(--tile);border:1px solid var(--line);border-radius:9px;padding:11px 13px;color:var(--text);font:inherit;resize:vertical" placeholder="Hi ${esc(name)}, quick question about my first report..."></textarea></div>
+          <div class="err" id="merr" style="margin-top:10px"></div></form>
+        <div class="mf"><button type="button" class="btn ghost" data-close>Cancel</button><button type="button" class="btn primary" id="sendMsg" data-to="${esc(name)}">Send</button></div>
+      </div>`);
+    setTimeout(()=>$('#f-msg')?.focus(),30);
+  }
+  function modal(html){ $('#modalRoot').innerHTML = `<div class="scrim" id="scrim">${html}</div>`; }
+  function closeModal(){ $('#modalRoot').innerHTML=''; viewer=null; render(); }
+
+  /* ============ RENDER ============ */
+  function render(){
+    renderTabs();
+    const m = $('#main');
+    const views = {dashboard, profile, resources, agreement, members, library};
+    m.innerHTML = `<div class="view">${(views[S.tab]||dashboard)()}</div>`;
+    if(S.tab==='agreement' && !S.signed) setupPad();
+  }
+
+  /* ============ EVENTS ============ */
+  document.addEventListener('click', e => {
+    const t = e.target.closest('button,[data-close]'); if(!t) { if(e.target.id==='scrim') closeModal(); return; }
+    if(t.dataset.tab){ go(t.dataset.tab); return; }
+    if(t.dataset.go){ if(document.getElementById('scrim')) $('#modalRoot').innerHTML=''; go(t.dataset.go); return; }
+    if(t.dataset.filter){ S.filter=t.dataset.filter; render(); return; }
+    if(t.dataset.open){ openViewer(t.dataset.open); return; }
+    if(t.dataset.page){ const n = viewer.page + (+t.dataset.page); viewer.page = Math.max(0, Math.min(viewer.r.secs.length, n)); drawViewer(); return; }
+    if('close' in t.dataset){ closeModal(); return; }
+    if(t.dataset.act==='book'){ openBooking(); return; }
+    if(t.dataset.slot){ pickedSlot=t.dataset.slot; document.querySelectorAll('.slot').forEach(s=>s.setAttribute('aria-pressed', s.dataset.slot===pickedSlot)); $('#bookYes').disabled=false; return; }
+    if(t.id==='bookYes'){ S.call=pickedSlot; closeModal(); toast(`Onboarding call booked for ${S.call}`); return; }
+    if(t.dataset.msg){ openMessage(t.dataset.msg); return; }
+    if(t.id==='sendMsg'){ const v=$('#f-msg').value.trim(); if(!v){ $('#merr').textContent='Write a message before sending.'; return; } $('#modalRoot').innerHTML=''; toast(`Message to ${t.dataset.to} saved (mock, not delivered)`); return; }
+    if(t.id==='vAnalyst'){ S.view='member'; S.tab='dashboard'; S.confirmRevoke=null; render(); return; }
+    if(t.id==='vAdmin'){ S.view='admin'; S.tab='members'; render(); return; }
+    if(t.id==='meBtn'){ S.view='member'; go('profile'); return; }
+    if(t.id==='editBtn'){ S.editing=true; render(); setTimeout(()=>$('#f-preferred')?.focus(),20); return; }
+    if(t.id==='cancelBtn'){ S.editing=false; render(); return; }
+    if(t.id==='confirmBtn'){ S.profileConfirmed=true; render(); toast('Details confirmed'); return; }
+    if(t.id==='resetBtn'){ S=freshState(); $('#modalRoot').innerHTML=''; render(); window.scrollTo({top:0}); toast('Demo reset'); return; }
+    if(t.dataset.revoke){ S.confirmRevoke=t.dataset.revoke; render(); return; }
+    if('revokeNo' in t.dataset){ S.confirmRevoke=null; render(); return; }
+    if(t.dataset.revokeYes){ setStatus(t.dataset.revokeYes,'revoked'); S.confirmRevoke=null; render(); toast('Access revoked. Materials are now closed for this member.'); return; }
+    if(t.dataset.restore){ setStatus(t.dataset.restore,'restore'); render(); toast('Access restored'); return; }
+    if(t.dataset.remind){ toast(`Reminder queued for ${t.dataset.remind} (mock)`); return; }
+  });
+  function setStatus(id, action){
+    if(id===S.profile.memberId){ S.revoked = action==='revoked'; return; }
+    const m = S.others.find(x=>x.id===id); if(!m) return;
+    if(action==='revoked'){ m.status='revoked'; m.note='Offboarded today'; }
+    else { m.status = m.signed ? 'active' : 'pending'; m.note=null; }
+  }
+  document.addEventListener('submit', e => {
+    e.preventDefault();
+    if(e.target.id==='pform'){
+      const g = id => $('#f-'+id).value.trim();
+      const email = g('email'), phone = g('phone');
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ $('#perr').textContent='Enter a valid email address, like name@university.edu.'; return; }
+      if(!/^\+\d[\d\s-]{6,}$/.test(phone)){ $('#perr').textContent='Start your phone number with + and the country code, like +60 12-345 6789.'; return; }
+      Object.assign(S.profile,{preferred:g('preferred'),email,phone,university:g('university'),chapter:$('#f-chapter').value,timezone:g('timezone'),linkedin:g('linkedin')});
+      S.editing=false; S.profileConfirmed=true; render(); toast('Details saved');
+    }
+    if(e.target.id==='sform'){
+      const err = $('#serr');
+      if(!$('#c1').checked || !$('#c2').checked){ err.textContent='Tick both boxes to confirm you agree.'; return; }
+      if($('#f-typed').value.trim().toLowerCase() !== S.profile.name.toLowerCase()){ err.textContent=`Type your full name exactly as it appears on your profile: ${S.profile.name}.`; return; }
+      if(sigStrokes < 1){ err.textContent='Draw your signature in the box.'; return; }
+      S.sig = $('#sig').toDataURL('image/png'); S.signed=true; S.signedAt=nowStamp();
+      render(); window.scrollTo({top:0,behavior:'smooth'}); toast('Signed. Your resources are unlocked.');
+    }
+  });
+  document.addEventListener('keydown', e => { if(e.key==='Escape' && document.getElementById('scrim')) closeModal(); });
+
+  render();
+})();
+</script>
+</body>
+</html>
