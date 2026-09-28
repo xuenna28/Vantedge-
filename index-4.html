@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Vantedge Member Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Lato:wght@300;400;700&display=swap">
+<style>
+  :root{
+    color-scheme: dark;
+    --bg:#07081a;
+    --surface:#0c0e1e;
+    --raise:#11142a;
+    --hover:#161a33;
+    --line:#1e2238;
+    --line-2:#2a2f4a;
+    --text:#f3f1ea;
+    --muted:#9a9db2;
+    --dim:#686c86;
+    --cream:#dfdcc9;
+    --cream-2:#ede9e0;
+    --ok:#94c2a3; --ok-bg:rgba(148,194,163,.1);
+    --warn:#d8b877; --warn-bg:rgba(216,184,119,.1);
+    --bad:#dc8f8a; --bad-bg:rgba(220,143,138,.1);
+    --display:'Playfair Display', Georgia, 'Times New Roman', serif;
+    --body:'Lato', 'Helvetica Neue', Arial, sans-serif;
+    --logo:'Times New Roman', Times, serif;
+    --r:10px;
+    --side:248px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);font-size:14.5px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+  button{cursor:pointer}
+  :focus-visible{outline:1.5px solid var(--cream);outline-offset:2px}
+  h1,h2,h3{margin:0;font-weight:600;text-wrap:balance;line-height:1.2}
+  h1{font-family:var(--display);font-size:clamp(26px,3.2vw,34px);letter-spacing:-.005em}
+  h2{font-family:var(--display);font-size:19px}
+  h3{font-size:14.5px;font-weight:700}
+  .num{font-variant-numeric:tabular-nums}
+  svg.i{width:16px;height:16px;flex:0 0 auto;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  .label{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);font-weight:700}
+
+  /* ===== Shell ===== */
+  .shell{display:grid;grid-template-columns:var(--side) minmax(0,1fr);min-height:100%}
+  .side{position:sticky;top:env(safe-area-inset-top,0px);height:100vh;border-right:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;padding:26px 16px 18px}
+  .brand{padding:0 10px 26px}
+  .wordmark{font-family:var(--logo);font-weight:400;color:var(--cream);letter-spacing:.42em;font-size:17px;white-space:nowrap}
+  .brand .label{display:block;margin-top:6px;letter-spacing:.26em;font-size:9.5px}
+  .modes{display:grid;grid-template-columns:1fr 1fr;background:var(--raise);border:1px solid var(--line);border-radius:8px;padding:3px;margin:0 4px 22px}
+  .modes button{background:none;border:0;border-radius:6px;padding:7px 0;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);font-weight:700}
+  .modes button[aria-pressed="true"]{background:var(--hover);color:var(--cream)}
+  .nav{display:flex;flex-direction:column;gap:2px}
+  .nav .label{padding:0 12px 8px}
+  .nav button{display:flex;align-items:center;gap:12px;background:none;border:0;border-radius:8px;padding:10px 12px;color:var(--muted);text-align:left;font-size:14px;position:relative}
+  .nav button:hover{color:var(--text);background:var(--raise)}
+  .nav button[aria-current="page"]{color:var(--text);background:var(--raise)}
+  .nav button[aria-current="page"]::before{content:"";position:absolute;left:-16px;top:9px;bottom:9px;width:2px;background:var(--cream);border-radius:2px}
+  .nav .end{margin-left:auto;color:var(--dim)}
+  .side-foot{margin-top:auto;display:flex;flex-direction:column;gap:12px}
+  .conn{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--dim);padding:0 12px}
+  .conn .dot{width:6px;height:6px;border-radius:50%;background:var(--dim)}
+  .conn.live .dot{background:var(--ok);box-shadow:0 0 0 3px rgba(148,194,163,.15)}
+  .whoami{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--line);border-radius:var(--r);background:var(--raise)}
+  .whoami .t{flex:1;min-width:0;line-height:1.3}
+  .whoami b{display:block;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .whoami span{font-size:12px;color:var(--dim)}
+  .iconbtn{background:none;border:1px solid var(--line-2);border-radius:7px;width:32px;height:32px;display:grid;place-items:center;color:var(--muted)}
+  .iconbtn:hover{color:var(--text);border-color:var(--cream)}
+  .av{width:34px;height:34px;border-radius:50%;background:var(--hover);border:1px solid var(--line-2);display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--cream);letter-spacing:.04em;flex:0 0 auto}
+  .av.lg{width:58px;height:58px;font-family:var(--display);font-size:20px;font-weight:600}
+
+  main{min-width:0;padding-inline:44px;padding-block:40px 110px}
+  .page{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+  .ph{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;padding-bottom:26px;border-bottom:1px solid var(--line)}
+  .ph .label{display:block;margin-bottom:10px;color:var(--cream)}
+  .ph p{margin:8px 0 0;color:var(--muted);max-width:60ch}
+  .ph-r{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+  /* ===== Surfaces ===== */
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+  .panel-h{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:18px 22px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .panel-h p{margin:2px 0 0;color:var(--dim);font-size:13px}
+  .panel-b{padding:22px}
+  .cols{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:22px;align-items:start}
+  .stack{display:flex;flex-direction:column;gap:22px}
+
+  /* ===== Buttons & chips ===== */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:700;letter-spacing:.03em;border:1px solid var(--line-2);background:var(--raise);color:var(--text);transition:border-color .15s,background .15s,color .15s;white-space:nowrap}
+  .btn:hover{border-color:var(--cream)}
+  .btn.pri{background:var(--cream);border-color:var(--cream);color:#0c0e1e}
+  .btn.pri:hover{background:var(--cream-2)}
+  .btn.ghost{background:transparent}
+  .btn.danger{background:transparent;color:var(--bad);border-color:rgba(220,143,138,.35)}
+  .btn.danger:hover{border-color:var(--bad)}
+  .btn.sm{padding:7px 12px;font-size:12px}
+  .btn[disabled]{opacity:.4;cursor:not-allowed}
+  .btn[disabled]:hover{border-color:var(--line-2)}
+  .chip{display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.06em;padding:4px 10px;border-radius:999px;border:1px solid var(--line-2);color:var(--muted);white-space:nowrap;font-weight:700}
+  .chip .d{width:6px;height:6px;border-radius:50%;background:currentColor}
+  .chip.ok{color:var(--ok);background:var(--ok-bg);border-color:transparent}
+  .chip.warn{color:var(--warn);background:var(--warn-bg);border-color:transparent}
+  .chip.bad{color:var(--bad);background:var(--bad-bg);border-color:transparent}
+  .yes{color:var(--ok);display:inline-flex;align-items:center;gap:6px}
+  .no{color:var(--dim);display:inline-flex;align-items:center;gap:6px}
+  .miss{color:var(--warn);display:inline-flex;align-items:center;gap:6px}
+
+  /* ===== Notice ===== */
+  .notice{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;background:var(--cream-2);color:#0c0e1e;border-radius:var(--r);padding:18px 22px}
+  .notice b{font-family:var(--display);font-size:17px;font-weight:600;display:block}
+  .notice p{margin:2px 0 0;font-size:13.5px;max-width:62ch;color:#2b2e44}
+  .notice .btn.pri{background:#0c0e1e;border-color:#0c0e1e;color:var(--cream)}
+  .notice .btn.pri:hover{background:#1a1d33}
+  .notice.bad{background:var(--bad-bg);color:var(--text);border:1px solid rgba(220,143,138,.3)}
+  .notice.bad b{color:var(--bad)}
+  .notice.bad p{color:var(--muted)}
+
+  /* ===== Identity / details ===== */
+  .ident{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .ident h2{font-size:23px}
+  .ident .sub{color:var(--muted);font-size:13.5px;margin-top:2px}
+  .dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin:0;border-top:1px solid var(--line)}
+  .dl > div{padding:14px 0;border-bottom:1px solid var(--line);min-width:0}
+  .dl > div:nth-child(odd){padding-right:18px}
+  .dl dt{margin-bottom:3px}
+  .dl dd{margin:0;overflow-wrap:anywhere}
+  .dl dd.empty{color:var(--warn);font-size:13.5px}
+
+  /* ===== Checklist ===== */
+  .meter{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .meter .bar{flex:1;height:4px;background:var(--raise);border-radius:4px;overflow:hidden}
+  .meter .bar span{display:block;height:100%;background:var(--cream);border-radius:4px;transition:width .35s}
+  .meter .n{font-size:12px;color:var(--muted)}
+  .steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+  .step{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:14px;align-items:center;padding:13px 0;border-top:1px solid var(--line)}
+  .step:first-child{border-top:0}
+  .step .mk{width:22px;height:22px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;font-size:11px;color:var(--dim)}
+  .step.done .mk{background:var(--cream);border-color:var(--cream);color:#0c0e1e}
+  .step.done .mk svg{width:12px;height:12px;stroke-width:2.4}
+  .step .s{font-size:12.5px;color:var(--dim)}
+  .step.done .t{color:var(--muted)}
+
+  /* ===== Contacts ===== */
+  .contact{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+  .contact:first-child{border-top:0;padding-top:0}
+  .contact .t{flex:1;min-width:0;line-height:1.35}
+  .contact b{display:block;font-size:14px}
+  .contact span{font-size:12.5px;color:var(--dim)}
+
+  /* ===== Library ===== */
+  .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  .seg{display:flex;gap:4px;flex-wrap:wrap}
+  .seg button{background:none;border:1px solid transparent;border-radius:7px;padding:7px 12px;font-size:12.5px;color:var(--muted)}
+  .seg button:hover{color:var(--text)}
+  .seg button[aria-pressed="true"]{background:var(--raise);border-color:var(--line-2);color:var(--text)}
+  .lib{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+  .doc{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 18px 16px;display:flex;flex-direction:column;gap:8px;min-height:176px;transition:border-color .15s}
+  .doc:hover{border-color:var(--line-2)}
+  .doc .top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .doc .ft{width:30px;height:38px;border:1px solid var(--line-2);border-radius:4px 9px 4px 4px;display:grid;place-items:end center;padding-bottom:5px;font-size:8.5px;letter-spacing:.12em;color:var(--dim);font-weight:700}
+  .doc h3{font-size:15px;margin-top:6px}
+  .doc p{margin:0;color:var(--muted);font-size:13px;flex:1}
+  .doc .bt{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-top:12px;border-top:1px solid var(--line);font-size:12px;color:var(--dim)}
+  .doc.locked h3,.doc.locked p{color:var(--dim)}
+  .doc.locked p{filter:blur(2.5px);user-select:none}
+  .lk{display:inline-flex;align-items:center;gap:6px}
+  .lk svg{width:13px;height:13px}
+  .empty{color:var(--dim);font-size:13.5px;padding:34px;text-align:center;border:1px dashed var(--line-2);border-radius:var(--r)}
+
+  /* ===== Forms ===== */
+  .form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 18px}
+  .field{display:flex;flex-direction:column;gap:7px;min-width:0}
+  .field.full{grid-column:1/-1}
+  .field label{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);font-weight:700}
+  .field label .req{color:var(--warn)}
+  .field input,.field select,.field textarea{background:var(--raise);border:1px solid var(--line-2);border-radius:8px;padding:11px 13px;width:100%;min-width:0;transition:border-color .15s}
+  .field input:hover,.field select:hover,.field textarea:hover{border-color:#3a4062}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--cream)}
+  .field input:disabled,.field select:disabled{color:var(--muted);background:transparent;border-color:var(--line);cursor:default}
+  .field .hint{font-size:12px;color:var(--dim)}
+  .form-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+  .err{color:var(--bad);font-size:13px}
+  .sect{margin:28px 0 14px;display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+  .sect:first-child{margin-top:0}
+  .sect span{font-size:12px;color:var(--dim)}
+
+  /* ===== Auth ===== */
+  .auth{min-height:100vh;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr)}
+  .auth-l{position:relative;padding:48px;display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid var(--line);background:var(--surface);overflow:hidden}
+  .auth-l canvas{position:absolute;inset:0;width:100%;height:100%;opacity:.55;pointer-events:none}
+  .auth-l > *{position:relative}
+  .auth-l h1{font-size:clamp(32px,4vw,46px);font-weight:600;margin-top:10px;max-width:14ch}
+  .auth-l p{color:var(--muted);max-width:40ch;margin:16px 0 0}
+  .auth-l .tag{font-family:Georgia,'Times New Roman',serif;font-weight:700;color:var(--cream);font-size:15px}
+  .auth-r{display:grid;place-items:center;padding:48px 32px}
+  .auth-card{width:min(440px,100%)}
+  .auth-tabs{display:flex;gap:22px;border-bottom:1px solid var(--line);margin-bottom:26px}
+  .auth-tabs button{background:none;border:0;padding:0 0 12px;color:var(--dim);font-size:14px;position:relative;font-weight:700}
+  .auth-tabs button[aria-selected="true"]{color:var(--text)}
+  .auth-tabs button[aria-selected="true"]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1.5px;background:var(--cream)}
+  .auth-card h2{font-size:24px;margin-bottom:6px}
+  .auth-card > p{color:var(--muted);margin:0 0 22px;font-size:13.5px}
+  .auth-card .form{grid-template-columns:1fr}
+  .auth-card .form.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .auth-card .btn.pri{width:100%;padding:12px}
+  .auth-alt{margin-top:18px;font-size:13px;color:var(--dim)}
+  .linkbtn{background:none;border:0;padding:0;color:var(--cream);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+  .auth-admin{margin-top:28px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:13px;color:var(--dim);flex-wrap:wrap}
+
+  /* ===== Agreement ===== */
+  .terms{padding:4px 22px 22px;max-height:360px;overflow:auto}
+  .terms h3{font-family:var(--display);font-size:15.5px;font-weight:600;color:var(--cream);margin:20px 0 4px}
+  .terms p{margin:0;color:var(--muted);font-size:13.5px;max-width:70ch}
+  .checks{display:flex;flex-direction:column;gap:12px;margin-bottom:22px}
+  .ck{display:flex;gap:12px;align-items:flex-start;font-size:14px;cursor:pointer}
+  .ck input{width:17px;height:17px;margin-top:3px;accent-color:#dfdcc9;flex:0 0 auto}
+  .sign-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:20px;align-items:start}
+  .pad{position:relative;background:var(--bg);border:1px solid var(--line-2);border-radius:8px;height:168px;touch-action:none}
+  .pad canvas{position:absolute;inset:0;width:100%;height:100%;border-radius:8px;cursor:crosshair}
+  .pad .base{position:absolute;left:20px;right:20px;bottom:38px;border-bottom:1px solid var(--line-2);pointer-events:none}
+  .pad .x{position:absolute;left:20px;bottom:42px;font-family:var(--display);color:var(--dim);pointer-events:none}
+  .pad .ph{position:absolute;inset:0 0 50px;display:grid;place-items:center;color:var(--dim);font-size:13px;pointer-events:none}
+  .sigimg{background:var(--bg);border:1px solid var(--line-2);border-radius:8px;display:block;width:100%;max-width:320px;height:auto}
+
+  /* ===== Admin ===== */
+  .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+  .stat{padding:18px 22px;border-left:1px solid var(--line)}
+  .stat:first-child{border-left:0}
+  .stat .v{font-family:var(--display);font-size:30px;font-weight:600;margin-top:4px;line-height:1.1}
+  .stat .v.ok{color:var(--ok)} .stat .v.warn{color:var(--warn)} .stat .v.bad{color:var(--bad)}
+  .search{display:flex;align-items:center;gap:8px;background:var(--raise);border:1px solid var(--line-2);border-radius:8px;padding:0 12px;color:var(--dim);min-width:0}
+  .search input{background:none;border:0;padding:9px 0;outline:none;min-width:0;width:220px;color:var(--text)}
+  .search:focus-within{border-color:var(--cream)}
+  .tw{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:860px}
+  th{text-align:left;padding:12px 16px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);font-weight:700;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:14px 16px;border-bottom:1px solid var(--line);vertical-align:middle}
+  tbody tr{cursor:pointer;transition:background .12s}
+  tbody tr:hover{background:var(--raise)}
+  tbody tr:last-child td{border-bottom:0}
+  .who{display:flex;align-items:center;gap:12px;min-width:0}
+  .who b{display:block;font-size:14px}
+  .who span{font-size:12px;color:var(--dim)}
+  td .sub{font-size:12px;color:var(--dim);display:block}
+
+  /* ===== Modal ===== */
+  .scrim{position:fixed;inset:0;background:rgba(3,4,12,.82);backdrop-filter:blur(3px);z-index:50;display:grid;place-items:center;padding:20px}
+  .modal{background:var(--surface);border:1px solid var(--line-2);border-radius:12px;width:min(720px,100%);max-height:calc(100vh - 40px);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+  .modal.sm{width:min(460px,100%)}
+  .mh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:20px 22px;border-bottom:1px solid var(--line)}
+  .mh p{margin:3px 0 0;color:var(--dim);font-size:12.5px}
+  .mb{padding:22px;overflow:auto}
+  .mf{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 22px;border-top:1px solid var(--line);flex-wrap:wrap}
+  .mf .r{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+  .sheet{position:relative;background:#f8f7f3;color:#0c0e1e;border-radius:4px;aspect-ratio:210/297;width:400px;max-width:100%;margin:0 auto;padding:34px 32px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+  .sheet .w{font-family:var(--logo);letter-spacing:.38em;font-size:10.5px;color:#4a4f6a}
+  .sheet h3{font-family:var(--display);font-size:21px;font-weight:600;margin:24px 0 8px}
+  .sheet .k{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#4a4f6a;margin-top:22px;font-weight:700}
+  .sheet .l{height:7px;border-radius:4px;background:#dcdad0;margin:9px 0}
+  .wm{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+  .wm span{transform:rotate(-32deg);font-size:14px;letter-spacing:.14em;color:rgba(12,14,30,.13);white-space:nowrap;font-weight:700}
+  .slots{display:flex;flex-direction:column;gap:8px}
+  .slot{background:var(--raise);border:1px solid var(--line-2);border-radius:8px;padding:13px 16px;display:flex;justify-content:space-between;gap:10px;text-align:left}
+  .slot span{color:var(--dim);font-size:12.5px}
+  .slot[aria-pressed="true"]{border-color:var(--cream)}
+  .idbox{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--raise);border:1px solid var(--line-2);border-radius:8px;padding:14px 16px;margin-top:14px}
+  .idbox b{font-family:var(--display);font-size:22px;letter-spacing:.06em}
+  .dz{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 0;border-top:1px solid var(--line)}
+  .dz:first-child{border-top:0;padding-top:0}
+  .dz p{margin:2px 0 0;font-size:12.5px;color:var(--dim)}
+
+  /* ===== Toast ===== */
+  .toast{position:fixed;left:50%;bottom:calc(26px + env(safe-area-inset-bottom,0px));transform:translate(-50%,16px);background:var(--cream-2);color:#0c0e1e;padding:11px 18px;border-radius:8px;font-size:13.5px;font-weight:700;opacity:0;transition:.22s;z-index:70;pointer-events:none;max-width:calc(100% - 32px);text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+  .toast.bad{background:#3a2226;color:#f3d6d4}
+
+  /* ===== Responsive ===== */
+  @media (max-width:1100px){.lib{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media (max-width:980px){
+    .cols,.sign-grid{grid-template-columns:1fr}
+    .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .stat:nth-child(3){border-left:0}
+    .stat:nth-child(n+3){border-top:1px solid var(--line)}
+    .auth{grid-template-columns:1fr}
+    .auth-l{border-right:0;border-bottom:1px solid var(--line);padding:32px 24px;gap:40px}
+  }
+  @media (max-width:820px){
+    .shell{grid-template-columns:1fr}
+    .side{position:sticky;top:env(safe-area-inset-top,0px);height:auto;z-index:30;flex-direction:row;flex-wrap:wrap;align-items:center;gap:12px;padding:12px 16px;border-right:0;border-bottom:1px solid var(--line)}
+    .brand{padding:0;margin-right:auto}
+    .brand .label{display:none}
+    .modes{margin:0;order:2}
+    .nav{order:4;flex-basis:100%;flex-direction:row;overflow-x:auto;scrollbar-width:none;gap:4px}
+    .nav::-webkit-scrollbar{display:none}
+    .nav .label{display:none}
+    .nav button{white-space:nowrap;padding:8px 12px}
+    .nav button[aria-current="page"]::before{display:none}
+    .side-foot{order:3;margin:0;flex-direction:row;align-items:center}
+    .conn,.whoami .t{display:none}
+    .whoami{padding:4px;border:0;background:none}
+    main{padding-inline:16px;padding-block:26px 100px}
+    .lib,.form,.dl{grid-template-columns:1fr}
+    .dl > div:nth-child(odd){padding-right:0}
+    .auth-card .form.two{grid-template-columns:1fr}
+    .auth-r{padding:32px 16px}
+    .search input{width:140px}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+</head>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="modalRoot"></div>
+
+<script>
+(function(){
+  /* ================= ICONS ================= */
+  const I = {
+    overview:'<path d="M3 3h7v7H3zM14 3h7v4h-7zM14 11h7v10h-7zM3 14h7v7H3z"/>',
+    profile:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',
+    library:'<path d="M4 4h5v16H4zM10 4h5v16h-5zM16 5l4 1-3 14-4-1z"/>',
+    agreement:'<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 17c1.5-2 2.5-2 3.5 0s2 2 4.5-1"/>',
+    members:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-3.5 3.5-5 6.5-5s5.5 1.5 6.5 5"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.5c2.5 0 4.5 1.5 5.5 4.5"/>',
+    key:'<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3M14 9l2 2"/>',
+    lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+    check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+    out:'<path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 16l-4-4 4-4M6 12h10"/>',
+    plus:'<path d="M12 5v14M5 12h14"/>',
+    search:'<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4-4"/>',
+    x:'<path d="M6 6l12 12M18 6L6 18"/>',
+    copy:'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/>',
+    arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+    minus:'<path d="M6 12h12"/>',
+    alert:'<path d="M12 8v5M12 16.5v.5"/><circle cx="12" cy="12" r="9"/>'
+  };
+  const ic = (n, cls='') => `<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${I[n]}</svg>`;
+
+  /* ================= REFERENCE DATA ================= */
+  const VERTICALS = {Research:['M&A','Equity Research','DCM','ECM'], Growth:['Growth']};
+  const ROLES = {Research:['Analyst','Senior Analyst','Head of Division'], Growth:['Partnerships & Outreach','Marketing & Social','Growth & Strategy']};
+  const CHAPTERS = ['Global remote team','Bocconi','Bath'];
+  const CONTACTS = [['Xuenna','Founder & Executive Director'],['Mariam','Co-Head of M&A · Bocconi Manager'],['Zhannel','VP of Global Marketing & Operations']];
+  const REQUIRED = {name:'Full name',email:'Email',phone:'Phone',university:'University',chapter:'Chapter',timezone:'Time zone',vertical:'Vertical',division:'Division',role:'Role'};
+  const SLOTS = ['Thu 2 Oct · 7:00 pm MYT','Sat 4 Oct · 3:00 pm MYT','Mon 6 Oct · 8:30 pm MYT'];
+  const RESOURCES = [
+    {id:'ma-readme',t:'M&A Analyst README',d:'How the three deliverables and progression gates fit together. Start here.',div:'M&A',type:'Guide',pages:8,secs:['The three deliverables','Progression gates','Your first report']},
+    {id:'ma-hb',t:'M&A Analyst Handbook',d:'The three research lenses: Advisory Pitch, Deconstruct the Deal, Industry Flow Report.',div:'M&A',type:'Handbook',pages:30,secs:['The three lenses','Synergy risk-weighting','Research cycle']},
+    {id:'ma-menu',t:'M&A Content Menu',d:'Short-form LinkedIn formats, unlocked after your first published report.',div:'M&A',type:'Handbook',pages:12,secs:['Formats','House style','Approval flow']},
+    {id:'ma-tpl',t:'M&A Report Template',d:'Publication-ready A4 template that all three lenses share.',div:'M&A',type:'Template',pages:16,secs:['Cover','Executive summary','Valuation approach']},
+    {id:'fm-hb',t:'Financial Modeling Handbook',d:'3-statement, comps, DCF, LBO and merger models.',div:'M&A',type:'Handbook',pages:40,secs:['3-statement model','DCF','LBO']},
+    {id:'er-readme',t:'ER README',d:'One flagship deliverable and two ways to build range: solo or team.',div:'Equity Research',type:'Guide',pages:8,secs:['The flagship report','Track A: solo','Track B: team']},
+    {id:'er-hb',t:'ER Research Handbook',d:'From historicals to forecasting, DCF, comps and the final report.',div:'Equity Research',type:'Handbook',pages:28,secs:['Historicals','Forecasting','Writing the thesis']},
+    {id:'er-wf',t:'ER Workflow Document',d:'Topic approval, division review, peer review and final sign-off.',div:'Equity Research',type:'Process',pages:6,secs:['Review owners','Timeline','Sign-off']},
+    {id:'dcm-hb',t:'DCM Onboarding Pack',d:'Credit basics, bond pricing and how DCM reports are structured.',div:'DCM',type:'Handbook',pages:14,secs:['Credit analysis','Pricing & spreads','Report structure']},
+    {id:'ecm-hb',t:'ECM Starter Guide',d:'IPO process, book-building and follow-on offerings.',div:'ECM',type:'Handbook',pages:12,secs:['IPO process','Book-building','Follow-ons']},
+    {id:'gr-onb',t:'Growth Division Onboarding',d:'Team culture, key contacts and who to go to for what.',div:'Growth',type:'Guide',pages:6,secs:['How we work','Contacts','Your first week']},
+    {id:'gr-play',t:'Partnerships & Outreach Playbook',d:'Synergy mapping, outreach mechanics and starter message templates.',div:'Growth',type:'Playbook',pages:18,secs:['Synergy rule','Five partner types','Outreach templates']},
+    {id:'all-onb',t:'Analyst Onboarding Guide',d:'Group chats, core contacts, choosing your lens and the onboarding call.',div:'All',type:'Guide',pages:5,secs:['Group chats','Core contacts','Onboarding call']},
+    {id:'all-brand',t:'Vantedge Brand Assets',d:'Colours, wordmark, typography and voice for anything you publish.',div:'All',type:'Brand',pages:10,secs:['Colour families','Typography','Voice']},
+    {id:'all-ppt',t:'Research PPT Formatting Rules',d:'Playfair Display headers, Lato body, sources in italics at the bottom.',div:'All',type:'Guide',pages:3,secs:['Fonts','Backgrounds','Citations']},
+    {id:'all-rec',t:'Training Session Recordings',d:'Recorded division trainings. Viewable in the portal only.',div:'All',type:'Video',pages:4,secs:['M&A curriculum','ER curriculum','Q&A sessions']}
+  ];
+
+  /* ================= STORE (live db, or in-memory fallback) ================= */
+  let DB = null, USER = null, live = false, loaded = false, canAdmin = false;
+  let MEM = new Map();            // memberId -> member doc
+  const LOCAL_SIGS = new Map();   // fallback only
+  const Store = {
+    async init(){
+      try{
+        if(window.claude && typeof window.claude.use === 'function'){
+          [DB, USER] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+        }
+      }catch(e){ DB = null; }
+      if(USER){ try{ canAdmin = !!(await USER.canEdit()); }catch(e){ canAdmin = false; } }
+      if(DB){
+        live = true;
+        DB.collection('members').onSnapshot(snap => {
+          MEM = new Map(snap.docs.map(d => [d.id, Object.assign({}, d.data(), {id:d.id})]));
+          loaded = true; syncSession(); render();
+        }, err => { toast('Live updates stopped. Reload the page to reconnect.', true); });
+      } else {
+        canAdmin = true; loaded = true;
+      }
+      render();
+    },
+    async set(id, data){
+      if(live) return DB.doc('members/'+id).set(data);
+      MEM.set(id, Object.assign({}, data, {id})); render();
+    },
+    async update(id, patch){
+      if(live) return DB.doc('members/'+id).update(patch);
+      MEM.set(id, Object.assign({}, MEM.get(id), patch)); render();
+    },
+    async remove(id){
+      if(live){ await DB.doc('members/'+id).delete(); await DB.doc('signatures/'+id).delete(); return; }
+      MEM.delete(id); LOCAL_SIGS.delete(id); render();
+    },
+    async setSig(id, png){
+      if(live) return DB.doc('signatures/'+id).set({png, at:new Date().toISOString()});
+      LOCAL_SIGS.set(id, png);
+    },
+    async getSig(id){
+      if(live){ const s = await DB.doc('signatures/'+id).get(); return s.exists ? s.data().png : null; }
+      return LOCAL_SIGS.get(id) || null;
+    }
+  };
+  async function save(fn, okMsg){
+    try{ await fn(); if(okMsg) toast(okMsg); return true; }
+    catch(e){
+      const code = e && e.code;
+      if(code === 'invalid_argument') toast('You don\'t have permission to save here. Ask the owner for Contributor access.', true);
+      else if(code === 'quota_exceeded') toast('The member list is full. Delete old members to add new ones.', true);
+      else toast('Couldn\'t save. Check your connection and try again.', true);
+      return false;
+    }
+  }
+
+  /* ================= SESSION ================= */
+  const SKEY = 'vtp-session-member';
+  const readSession = () => { try{ return localStorage.getItem(SKEY); }catch(e){ return null; } };
+  const writeSession = v => { try{ v ? localStorage.setItem(SKEY, v) : localStorage.removeItem(SKEY); }catch(e){} };
+
+  const UI = {
+    mode:'member', authTab:'signin', tab:'overview', adminTab:'members',
+    session: readSession(), filter:'mine', q:'', statusF:'all', editing:false
+  };
+  function syncSession(){ if(UI.session && loaded && !MEM.has(UI.session)){ UI.session = null; writeSession(null); } }
+  const me = () => UI.session ? MEM.get(UI.session) : null;
+
+  /* ================= HELPERS ================= */
+  const $ = s => document.querySelector(s);
+  const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const initials = n => String(n||'?').split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join('') || '?';
+  const missing = m => Object.keys(REQUIRED).filter(k => !String(m[k]||'').trim());
+  const complete = m => missing(m).length === 0;
+  const stateOf = m => m.revoked ? 'revoked' : !complete(m) ? 'details' : !m.signedAt ? 'signature' : 'active';
+  const hasAccess = m => !!m && stateOf(m) === 'active';
+  const onboardCount = m => [complete(m), !!m.signedAt, !!m.handbookAt, !!m.call].filter(Boolean).length;
+  const roleLine = m => [m.division, m.role].filter(Boolean).join(' ') || 'Role not set';
+  const fmtDate = iso => iso ? new Date(iso).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '';
+  const fmtDT = iso => iso ? `${fmtDate(iso)}, ${new Date(iso).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}` : '';
+  function ago(iso){
+    if(!iso) return '';
+    const s = Math.max(0, (Date.now() - new Date(iso).getTime())/1000);
+    if(s < 60) return 'Just now'; if(s < 3600) return Math.floor(s/60)+' min ago';
+    if(s < 86400) return Math.floor(s/3600)+' hr ago'; if(s < 86400*7) return Math.floor(s/86400)+' d ago';
+    return fmtDate(iso);
+  }
+  function chip(st){
+    return {
+      active:'<span class="chip ok"><span class="d"></span>Active</span>',
+      signature:'<span class="chip warn"><span class="d"></span>Awaiting signature</span>',
+      details:'<span class="chip warn"><span class="d"></span>Details missing</span>',
+      revoked:'<span class="chip bad"><span class="d"></span>Access revoked</span>'
+    }[st];
+  }
+  function toast(msg, bad){ const t = $('#toast'); t.textContent = msg; t.classList.toggle('bad', !!bad); t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(()=>t.classList.remove('on'), 3000); }
+  const opts = (list, val, blank) => (blank?`<option value="">${blank}</option>`:'') + list.map(o=>`<option ${o===val?'selected':''}>${esc(o)}</option>`).join('');
+  async function newId(){
+    for(let i=0;i<20;i++){ const id = 'VT-' + String(Math.floor(1000 + Math.random()*9000)); if(!MEM.has(id)) return id; }
+    return 'VT-' + Date.now().toString().slice(-6);
+  }
+  const nowISO = () => new Date().toISOString();
+
+  /* ================= AUTH (member, signed out) ================= */
+  function authView(){
+    const reg = UI.authTab === 'register';
+    return `<div class="auth">
+      <section class="auth-l">
+        <canvas id="grain" aria-hidden="true"></canvas>
+        <div class="wordmark">VANTEDGE</div>
+        <div>
+          <span class="label" style="color:var(--cream)">Member Portal</span>
+          <h1>Your desk, your materials, one login.</h1>
+          <p>Handbooks, templates and training live here instead of a shared Drive. Access is personal and closes the day you leave the team.</p>
+        </div>
+        <div class="tag">Earn Your AdVANTEDGE</div>
+      </section>
+      <section class="auth-r"><div class="auth-card">
+        <div class="auth-tabs" role="tablist">
+          <button type="button" role="tab" data-auth="signin" aria-selected="${!reg}">Sign in</button>
+          <button type="button" role="tab" data-auth="register" aria-selected="${reg}">New member</button>
+        </div>
+        ${reg ? `
+          <h2>Create your profile</h2><p>You'll get a member ID to sign in with next time.</p>
+          <form id="regForm" novalidate><div class="form two">
+            <div class="field full"><label for="r-name">Full name <span class="req">*</span></label><input id="r-name" autocomplete="name"></div>
+            <div class="field full"><label for="r-email">Email <span class="req">*</span></label><input id="r-email" type="email" autocomplete="email"></div>
+            <div class="field"><label for="r-vertical">Vertical <span class="req">*</span></label><select id="r-vertical">${opts(Object.keys(VERTICALS),'Research')}</select></div>
+            <div class="field"><label for="r-division">Division <span class="req">*</span></label><select id="r-division">${opts(VERTICALS.Research,'M&A')}</select></div>
+            <div class="field full"><label for="r-role">Role <span class="req">*</span></label><select id="r-role">${opts(ROLES.Research,'Analyst')}</select></div>
+          </div>
+          <p class="err" id="regErr" style="margin:14px 0 0"></p>
+          <div style="margin-top:18px"><button type="submit" class="btn pri" ${loaded?'':'disabled'}>${loaded?'Create profile':'Connecting…'}</button></div></form>
+          <div class="auth-alt">Already have a member ID? <button type="button" class="linkbtn" data-auth="signin">Sign in</button></div>`
+        : `
+          <h2>Welcome back</h2><p>Use the member ID from your offer email and the email you applied with.</p>
+          <form id="signinForm" novalidate><div class="form">
+            <div class="field"><label for="s-id">Member ID</label><input id="s-id" placeholder="VT-0000" autocomplete="username" style="text-transform:uppercase"></div>
+            <div class="field"><label for="s-email">Email</label><input id="s-email" type="email" autocomplete="email"></div>
+          </div>
+          <p class="err" id="signErr" style="margin:14px 0 0"></p>
+          <div style="margin-top:18px"><button type="submit" class="btn pri" ${loaded?'':'disabled'}>${loaded?'Sign in':'Connecting…'}</button></div></form>
+          <div class="auth-alt">Joining for the first time? <button type="button" class="linkbtn" data-auth="register">Create your profile</button></div>`}
+        ${canAdmin ? `<div class="auth-admin"><span>You manage this portal.</span><button type="button" class="btn sm" data-mode="admin">${ic('key')} Open admin</button></div>` : ''}
+      </div></section>
+    </div>`;
+  }
+  function drawGrain(){
+    const c = $('#grain'); if(!c) return;
+    const r = c.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio||1);
+    c.width = r.width*dpr; c.height = r.height*dpr;
+    const x = c.getContext('2d'); x.scale(dpr,dpr);
+    const step = 18;
+    for(let yy=step; yy<r.height; yy+=step){
+      for(let xx=step; xx<r.width; xx+=step){
+        const dx = xx - r.width*0.85, dy = yy - r.height*0.15;
+        const d = Math.sqrt(dx*dx+dy*dy) / Math.max(r.width, r.height);
+        const a = Math.max(0, 0.5 - d*0.75);
+        if(a <= 0.02) continue;
+        x.fillStyle = `rgba(223,220,201,${a.toFixed(3)})`;
+        x.beginPath(); x.arc(xx, yy, 0.9, 0, Math.PI*2); x.fill();
+      }
+    }
+  }
+
+  /* ================= SHELL ================= */
+  function shell(content){
+    const m = me();
+    const admin = UI.mode === 'admin';
+    const nav = admin
+      ? [['members','Members','members'],['access','Library access','key']]
+      : [['overview','Overview','overview'],['profile','Profile','profile'],['library','Library','library'],['agreement','Agreement','agreement']];
+    const cur = admin ? UI.adminTab : UI.tab;
+    return `<div class="shell">
+      <aside class="side">
+        <div class="brand"><div class="wordmark">VANTEDGE</div><span class="label">${admin?'Admin console':'Member portal'}</span></div>
+        ${canAdmin ? `<div class="modes" role="group" aria-label="Switch view">
+          <button type="button" data-mode="member" aria-pressed="${!admin}">Member</button>
+          <button type="button" data-mode="admin" aria-pressed="${admin}">Admin</button></div>` : ''}
+        <nav class="nav" aria-label="Sections"><span class="label">${admin?'Manage':'Your space'}</span>
+          ${nav.map(([k,l,icn]) => {
+            const locked = !admin && k==='library' && !hasAccess(m);
+            return `<button type="button" data-nav="${k}" ${cur===k?'aria-current="page"':''}>${ic(icn)}${l}${locked?`<span class="end">${ic('lock')}</span>`:''}</button>`;
+          }).join('')}
+        </nav>
+        <div class="side-foot">
+          <div class="conn ${live?'live':''}"><span class="dot"></span>${live?'Live · changes save automatically':'Demo copy · changes are not saved'}</div>
+          ${admin ? `<div class="whoami"><span class="av">${ic('key')}</span><div class="t"><b>Founding team</b><span>${MEM.size} member${MEM.size===1?'':'s'}</span></div></div>`
+            : m ? `<div class="whoami"><span class="av">${esc(initials(m.name))}</span><div class="t"><b>${esc(m.preferred||m.name)}</b><span class="num">${esc(m.id)}</span></div><button type="button" class="iconbtn" id="signOut" aria-label="Sign out" title="Sign out">${ic('out')}</button></div>` : ''}
+        </div>
+      </aside>
+      <main id="main">${content}</main>
+    </div>`;
+  }
+
+  /* ================= MEMBER: OVERVIEW ================= */
+  function notice(m){
+    const st = stateOf(m);
+    if(st === 'revoked') return `<div class="notice bad"><div><b>Your access has been removed</b><p>Your membership has ended, so handbooks, templates and recordings are closed. Work you published stays credited to you. If this is a mistake, contact the founding team.</p></div></div>`;
+    if(st === 'details') return `<div class="notice"><div><b>Finish your details to continue</b><p>${missing(m).length} required field${missing(m).length===1?'':'s'} left: ${missing(m).map(k=>REQUIRED[k]).join(', ')}.</p></div><button type="button" class="btn pri" data-nav="profile" data-edit="1">Complete details</button></div>`;
+    if(st === 'signature') return `<div class="notice"><div><b>Sign the Member Agreement to unlock your library</b><p>Your handbooks, templates and recordings open inside the portal once you sign. It takes about two minutes.</p></div><button type="button" class="btn pri" data-nav="agreement">Review and sign</button></div>`;
+    return '';
+  }
+  function overview(m){
+    const steps = [
+      {done:complete(m), t:'Complete your details', s:complete(m)?'All required fields filled':`${missing(m).length} field${missing(m).length===1?'':'s'} missing`, b:complete(m)?'Edit':'Complete', nav:'profile', edit:1},
+      {done:!!m.signedAt, t:'Sign the Member Agreement', s:m.signedAt?`Signed ${fmtDT(m.signedAt)}`:(complete(m)?'Unlocks the full library':'Available once details are complete'), b:m.signedAt?'View':'Sign', nav:'agreement', dis:!complete(m)&&!m.signedAt},
+      {done:!!m.handbookAt, t:`Read your ${m.division==='Growth'?'onboarding guide':(m.division||'division')+' handbook'}`, s:m.handbookAt?`Opened ${fmtDate(m.handbookAt)}`:(hasAccess(m)?'Open it from your library':'Locked until you sign'), b:'Open', nav:'library', dis:!hasAccess(m)},
+      {done:!!m.call, t:'Book your onboarding call', s:m.call?`Booked for ${m.call}`:'30 minutes with the team', b:m.call?'Change':'Book', act:'book', dis:m.revoked}
+    ];
+    const n = steps.filter(s=>s.done).length;
+    const mine = RESOURCES.filter(r => r.div===m.division || r.div==='All').slice(0,3);
+    return `<div class="page">
+      <header class="ph"><div><span class="label">Overview</span><h1>Welcome, ${esc(m.preferred || String(m.name).split(' ')[0])}.</h1>
+        <p>${esc(roleLine(m))} · ${esc(m.chapter||'Chapter not set')}. Everything for your role is in one place.</p></div>
+        <div class="ph-r">${chip(stateOf(m))}</div></header>
+      ${notice(m)}
+      <div class="cols">
+        <section class="panel"><div class="panel-h"><div><h2>Member details</h2><p>Saved to your profile. The founding team sees the same record.</p></div><button type="button" class="btn sm ghost" data-nav="profile" data-edit="1">Edit</button></div>
+          <div class="panel-b">
+            <div class="ident" style="margin-bottom:20px"><span class="av lg">${esc(initials(m.name))}</span><div><h2>${esc(m.name)}</h2><div class="sub num">${esc(m.id)} · Joined ${esc(fmtDate(m.createdAt))}</div></div></div>
+            ${detailList(m)}
+          </div></section>
+        <div class="stack">
+          <section class="panel"><div class="panel-h"><h2>Onboarding</h2></div><div class="panel-b">
+            <div class="meter"><div class="bar"><span style="width:${n*25}%"></span></div><span class="n num">${n} of 4</span></div>
+            <ol class="steps">${steps.map((s,i)=>`<li class="step ${s.done?'done':''}"><span class="mk">${s.done?ic('check'):i+1}</span>
+              <div><div class="t">${s.t}</div><div class="s">${esc(s.s)}</div></div>
+              <button type="button" class="btn sm ghost" ${s.act?`data-act="${s.act}"`:`data-nav="${s.nav}"`} ${s.edit&&!s.done?'data-edit="1"':''} ${s.dis?'disabled':''}>${s.b}</button></li>`).join('')}</ol>
+          </div></section>
+          <section class="panel"><div class="panel-h"><h2>Your contacts</h2></div><div class="panel-b">
+            ${CONTACTS.map(([nm,r])=>`<div class="contact"><span class="av">${initials(nm)}</span><div class="t"><b>${esc(nm)}</b><span>${esc(r)}</span></div><button type="button" class="btn sm ghost" data-msg="${esc(nm)}">Message</button></div>`).join('')}
+          </div></section>
+        </div>
+      </div>
+      <section class="stack" style="gap:14px">
+        <div class="toolbar"><h2>Your division materials</h2><button type="button" class="btn sm ghost" data-nav="library">Open library ${ic('arrow')}</button></div>
+        <div class="lib">${mine.map(r=>docCard(r,m)).join('')}</div>
+      </section>
+    </div>`;
+  }
+  function detailList(m){
+    const rows = [['Vertical',m.vertical],['Division',m.division],['Role',m.role],['Chapter',m.chapter],['Email',m.email],['Phone',m.phone],['University',m.university],['Time zone',m.timezone],['LinkedIn',m.linkedin,true]];
+    return `<dl class="dl">${rows.map(([k,v,opt])=>`<div><dt class="label">${k}</dt>${String(v||'').trim()?`<dd>${esc(v)}</dd>`:`<dd class="empty">${opt?'Not added':'Missing'}</dd>`}</div>`).join('')}</dl>`;
+  }
+
+  /* ================= MEMBER: PROFILE ================= */
+  function profile(m){
+    const e = UI.editing;
+    const inp = (id,label,opt={}) => `<div class="field ${opt.full?'full':''}"><label for="p-${id}">${label}${REQUIRED[id]&&e?' <span class="req">*</span>':''}</label>
+      <input id="p-${id}" value="${esc(m[id]||'')}" ${!e?'disabled':''} ${opt.type?`type="${opt.type}"`:''} ${opt.ph?`placeholder="${esc(opt.ph)}"`:''} autocomplete="off">
+      ${opt.hint&&e?`<span class="hint">${opt.hint}</span>`:''}</div>`;
+    return `<div class="page">
+      <header class="ph"><div><span class="label">Profile</span><h1>${esc(m.name)}</h1>
+        <p>Keep these up to date. They go straight to the founding team's member list.</p></div>
+        <div class="ph-r">${e?'':'<button type="button" class="btn" id="editBtn">Edit details</button>'}</div></header>
+      ${m.revoked?notice(m):''}
+      <form class="panel" id="pForm" novalidate><div class="panel-b">
+        <div class="sect"><h2>Role at Vantedge</h2><span>Set by the founding team</span></div>
+        <div class="form">
+          <div class="field"><label>Member ID</label><input value="${esc(m.id)}" disabled></div>
+          <div class="field"><label>Vertical</label><input value="${esc(m.vertical||'')}" disabled></div>
+          <div class="field"><label>Division</label><input value="${esc(m.division||'')}" disabled></div>
+          <div class="field"><label>Role</label><input value="${esc(m.role||'')}" disabled></div>
+        </div>
+        <div class="sect"><h2>Your details</h2><span>${e?'Fields marked * are required':'Last updated '+esc(ago(m.updatedAt))}</span></div>
+        <div class="form">
+          ${inp('name','Full name')}
+          ${inp('preferred','Preferred name',{ph:'What the team should call you'})}
+          ${inp('email','Email',{type:'email',hint:'Offers, reminders and access notices go here.'})}
+          ${inp('phone','Phone',{type:'tel',ph:'+60 12-345 6789',hint:'With country code. Used to add you to your group chat.'})}
+          ${inp('university','University',{ph:'e.g. Bocconi University'})}
+          <div class="field"><label for="p-chapter">Chapter${e?' <span class="req">*</span>':''}</label><select id="p-chapter" ${!e?'disabled':''}>${opts(CHAPTERS,m.chapter,'Select a chapter')}</select></div>
+          ${inp('timezone','Time zone',{ph:'e.g. Europe/Rome (UTC+1)'})}
+          ${inp('linkedin','LinkedIn',{ph:'linkedin.com/in/your-name'})}
+        </div>
+        ${e?`<div class="form-foot"><span class="err" id="pErr"></span><div style="display:flex;gap:8px;margin-left:auto"><button type="button" class="btn ghost" id="cancelEdit">Cancel</button><button type="submit" class="btn pri">Save details</button></div></div>`:''}
+      </div></form>
+    </div>`;
+  }
+
+  /* ================= MEMBER: LIBRARY ================= */
+  function docCard(r, m){
+    const open = hasAccess(m);
+    const ext = r.type==='Video' ? 'MP4' : r.type==='Template' ? 'PPT' : 'PDF';
+    return `<article class="doc ${open?'':'locked'}">
+      <div class="top"><span class="label">${esc(r.type)} · ${esc(r.div==='All'?'General':r.div)}</span><span class="ft">${ext}</span></div>
+      <h3>${esc(r.t)}</h3><p>${esc(r.d)}</p>
+      <div class="bt">${open?`<span class="num">${r.pages} ${r.type==='Video'?'sessions':'pages'} · view only</span><button type="button" class="btn sm" data-open="${r.id}">Open</button>`
+        :`<span class="lk">${ic('lock')} ${m&&m.revoked?'Access removed':'Sign to unlock'}</span>${m&&!m.revoked?`<button type="button" class="btn sm ghost" data-nav="${complete(m)?'agreement':'profile'}" ${complete(m)?'':'data-edit="1"'}>Unlock</button>`:''}`}</div>
+    </article>`;
+  }
+  function library(m){
+    const fs = [['mine','For you'],['all','All'],['M&A','M&A'],['Equity Research','ER'],['DCM','DCM'],['ECM','ECM'],['Growth','Growth'],['All','General']];
+    let list = RESOURCES;
+    if(UI.filter==='mine') list = RESOURCES.filter(r=>r.div===m.division||r.div==='All');
+    else if(UI.filter!=='all') list = RESOURCES.filter(r=>r.div===UI.filter);
+    return `<div class="page">
+      <header class="ph"><div><span class="label">Library</span><h1>Handbooks and materials</h1>
+        <p>Everything opens here as view-only, watermarked with your name and member ID. Nothing to keep in a Drive once you leave.</p></div>
+        <div class="ph-r">${hasAccess(m)?'<span class="chip ok"><span class="d"></span>Unlocked</span>':'<span class="chip"><span class="d"></span>Locked</span>'}</div></header>
+      ${notice(m)}
+      <div class="toolbar"><div class="seg" role="group" aria-label="Filter">${fs.map(([k,l])=>`<button type="button" data-filter="${esc(k)}" aria-pressed="${UI.filter===k}">${l}</button>`).join('')}</div>
+        <span class="label num">${list.length} item${list.length===1?'':'s'}</span></div>
+      ${list.length?`<div class="lib">${list.map(r=>docCard(r,m)).join('')}</div>`:'<div class="empty">Nothing in this category yet.</div>'}
+    </div>`;
+  }
+
+  /* ================= MEMBER: AGREEMENT ================= */
+  const TERMS = `
+    <h3>1. Vantedge materials</h3><p>Handbooks, templates, training recordings and internal documents belong to Vantedge. You can use them for as long as you are a member of the team.</p>
+    <h3>2. Keep them inside the portal</h3><p>Do not download, screenshot, forward, re-upload or share any material outside this portal. Every page is watermarked with your name and member ID.</p>
+    <h3>3. Access ends when you leave</h3><p>When your membership ends, whether you resign or are offboarded, your portal access is removed the same day.</p>
+    <h3>4. Your published work</h3><p>Reports and content you author stay credited to you with your byline, including after you leave. Vantedge may keep publishing them on its website and channels.</p>
+    <h3>5. Conduct</h3><p>Represent Vantedge professionally in group chats, calls and outreach. Do not speak for Vantedge to partners or press without approval.</p>
+    <h3>6. Your data</h3><p>We store your contact details to run the team and remove them on request after you leave, apart from your name on published work.</p>`;
+  function agreement(m){
+    if(m.signedAt){
+      return `<div class="page">
+        <header class="ph"><div><span class="label">Member Agreement · v1.0</span><h1>Signed</h1><p>Signed by ${esc(m.name)} on ${esc(fmtDT(m.signedAt))}.</p></div><div class="ph-r">${chip(stateOf(m))}</div></header>
+        ${m.revoked?notice(m):''}
+        <section class="panel"><div class="panel-h"><h2>Signature record</h2></div><div class="panel-b">
+          <div class="cols" style="align-items:center"><div id="sigSlot" class="label">Loading signature…</div>
+          <dl class="dl"><div><dt class="label">Signed by</dt><dd>${esc(m.signedName||m.name)}</dd></div><div><dt class="label">Member ID</dt><dd class="num">${esc(m.id)}</dd></div>
+            <div><dt class="label">Date and time</dt><dd class="num">${esc(fmtDT(m.signedAt))}</dd></div><div><dt class="label">Version</dt><dd>v1.0</dd></div></dl></div>
+        </div></section>
+        <section class="panel"><div class="panel-h"><h2>What you agreed to</h2></div><div class="terms">${TERMS}</div></section>
+      </div>`;
+    }
+    if(!complete(m)){
+      return `<div class="page"><header class="ph"><div><span class="label">Member Agreement · v1.0</span><h1>Details first</h1><p>Complete your profile before signing, so the agreement carries your correct name and contact details.</p></div></header>${notice(m)}</div>`;
+    }
+    return `<div class="page">
+      <header class="ph"><div><span class="label">Member Agreement · v1.0</span><h1>Read, confirm, sign</h1>
+        <p>Signing unlocks your library. It also means your access closes automatically when you leave the team.</p></div><div class="ph-r">${chip(stateOf(m))}</div></header>
+      <section class="panel"><div class="panel-h"><div><h2>The agreement</h2><p>Six short clauses.</p></div></div><div class="terms" tabindex="0">${TERMS}</div></section>
+      <form class="panel" id="sForm" novalidate><div class="panel-h"><div><h2>Sign</h2><p>Draw with your finger, trackpad or mouse.</p></div></div><div class="panel-b">
+        <div class="checks">
+          <label class="ck"><input type="checkbox" id="c1"> I have read the Member Agreement and agree to its terms.</label>
+          <label class="ck"><input type="checkbox" id="c2"> I understand my access to Vantedge materials ends when I leave the team.</label>
+        </div>
+        <div class="sign-grid">
+          <div class="field"><label for="typed">Type your full name</label><input id="typed" autocomplete="off" placeholder="${esc(m.name)}"><span class="hint">Must match your profile: ${esc(m.name)}</span></div>
+          <div class="field"><label>Signature</label>
+            <div class="pad" id="pad"><span class="base"></span><span class="x">×</span><span class="ph" id="padHint">Sign here</span><canvas id="sig" aria-label="Signature pad"></canvas></div>
+            <div style="display:flex;justify-content:space-between;align-items:center"><span class="hint num">${esc(fmtDate(nowISO()))}</span><button type="button" class="btn sm ghost" id="clearSig">Clear</button></div></div>
+        </div>
+        <div class="form-foot"><span class="err" id="sErr"></span><button type="submit" class="btn pri" style="margin-left:auto">Sign and unlock library</button></div>
+      </div></form>
+    </div>`;
+  }
+  let strokes = 0;
+  function setupPad(){
+    const c = $('#sig'); if(!c) return;
+    const pad = $('#pad'), ctx = c.getContext('2d');
+    const r = pad.getBoundingClientRect(), dpr = window.devicePixelRatio||1;
+    c.width = r.width*dpr; c.height = r.height*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.lineWidth = 2; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.strokeStyle='#dfdcc9'; ctx.fillStyle='#dfdcc9';
+    strokes = 0; let down=false, last=null;
+    const pt = ev => { const b=c.getBoundingClientRect(); return {x:ev.clientX-b.left, y:ev.clientY-b.top}; };
+    c.addEventListener('pointerdown', ev => { down=true; last=pt(ev); c.setPointerCapture(ev.pointerId); $('#padHint').hidden=true; ctx.beginPath(); ctx.arc(last.x,last.y,1,0,Math.PI*2); ctx.fill(); strokes++; });
+    c.addEventListener('pointermove', ev => { if(!down) return; const p=pt(ev); ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke(); last=p; });
+    ['pointerup','pointercancel','pointerleave'].forEach(t => c.addEventListener(t, ()=>{ down=false; }));
+    $('#clearSig').onclick = () => { ctx.clearRect(0,0,c.width,c.height); strokes=0; $('#padHint').hidden=false; };
+  }
+  function exportSig(){
+    const c = $('#sig'), w = Math.round(c.clientWidth), h = Math.round(c.clientHeight);
+    const o = document.createElement('canvas'); o.width = w; o.height = h;
+    const x = o.getContext('2d'); x.fillStyle = '#07081a'; x.fillRect(0,0,w,h); x.drawImage(c,0,0,w,h);
+    return o.toDataURL('image/png');
+  }
+
+  /* ================= ADMIN: MEMBERS ================= */
+  function adminMembers(){
+    const all = [...MEM.values()].sort((a,b)=>String(b.updatedAt||'').localeCompare(String(a.updatedAt||'')));
+    const cnt = st => all.filter(m=>stateOf(m)===st).length;
+    const q = UI.q.trim().toLowerCase();
+    let rows = all.filter(m => !q || [m.name,m.email,m.id,m.division,m.role].some(v=>String(v||'').toLowerCase().includes(q)));
+    if(UI.statusF!=='all') rows = rows.filter(m=>stateOf(m)===UI.statusF);
+    return `<div class="page">
+      <header class="ph"><div><span class="label">Admin · Members</span><h1>Members and access</h1>
+        <p>Every detail members type in shows up here live. Revoke access the day someone leaves and their library closes.</p></div>
+        <div class="ph-r"><button type="button" class="btn pri" data-act="add">${ic('plus')} Add member</button></div></header>
+      <div class="stats">
+        <div class="stat"><div class="label">Members</div><div class="v num">${all.length}</div></div>
+        <div class="stat"><div class="label">Active</div><div class="v ok num">${cnt('active')}</div></div>
+        <div class="stat"><div class="label">Need action</div><div class="v warn num">${cnt('details')+cnt('signature')}</div></div>
+        <div class="stat"><div class="label">Revoked</div><div class="v bad num">${cnt('revoked')}</div></div>
+      </div>
+      <section class="panel">
+        <div class="panel-h">
+          <label class="search">${ic('search')}<input id="q" placeholder="Search name, email, ID" value="${esc(UI.q)}" aria-label="Search members"></label>
+          <div class="seg" role="group" aria-label="Status">${[['all','All'],['details','Details missing'],['signature','Awaiting signature'],['active','Active'],['revoked','Revoked']].map(([k,l])=>`<button type="button" data-status="${k}" aria-pressed="${UI.statusF===k}">${l}</button>`).join('')}</div>
+        </div>
+        ${!loaded ? '<div class="panel-b"><div class="empty">Loading members…</div></div>'
+          : !all.length ? `<div class="panel-b"><div class="empty">No members yet. Add one, or switch to Member view and create a profile to test the flow.</div></div>`
+          : !rows.length ? '<div class="panel-b"><div class="empty">No members match this search.</div></div>'
+          : `<div class="tw"><table>
+            <thead><tr><th>Member</th><th>Division · Role</th><th>Details</th><th>Agreement</th><th>Onboarding</th><th>Status</th><th>Updated</th></tr></thead>
+            <tbody>${rows.map(m=>{ const ms = missing(m); return `<tr data-view="${esc(m.id)}" tabindex="0">
+              <td><div class="who"><span class="av">${esc(initials(m.name))}</span><div><b>${esc(m.name||'Unnamed')}</b><span class="num">${esc(m.id)} · ${esc(m.email||'no email')}</span></div></div></td>
+              <td>${esc(m.division||'Not set')}<span class="sub">${esc(m.vertical||'')}${m.role?' · '+esc(m.role):''}</span></td>
+              <td>${ms.length?`<span class="miss">${ic('alert')} ${ms.length} missing</span>`:`<span class="yes">${ic('check')} Complete</span>`}</td>
+              <td>${m.signedAt?`<span class="yes">${ic('check')} Signed</span><span class="sub num">${esc(fmtDate(m.signedAt))}</span>`:`<span class="no">${ic('minus')} Not signed</span>`}</td>
+              <td class="num">${onboardCount(m)} / 4</td>
+              <td>${chip(stateOf(m))}</td>
+              <td class="num" style="color:var(--muted)">${esc(ago(m.updatedAt))}</td></tr>`; }).join('')}</tbody>
+          </table></div>`}
+      </section>
+    </div>`;
+  }
+  function adminAccess(){
+    const all = [...MEM.values()];
+    const divs = ['M&A','Equity Research','DCM','ECM','Growth','All'];
+    return `<div class="page">
+      <header class="ph"><div><span class="label">Admin · Library access</span><h1>Who can open what</h1>
+        <p>Materials follow each member's division. General materials go to every active member. Only members who have signed and aren't revoked count.</p></div></header>
+      <div class="lib">${divs.map(d=>{
+        const items = RESOURCES.filter(r=>r.div===d);
+        const who = all.filter(m=>hasAccess(m) && (d==='All' || m.division===d));
+        return `<article class="doc"><div class="top"><span class="label">${d==='All'?'General':esc(d)}</span><span class="label num">${items.length} items</span></div>
+          <h3>${d==='All'?'All active members':esc(d)}</h3><p>${items.map(i=>esc(i.t)).join(' · ')}</p>
+          <div class="bt"><span>${who.length?who.slice(0,3).map(w=>esc(w.name)).join(', ')+(who.length>3?` +${who.length-3}`:''):'No active members yet'}</span><span class="chip ${who.length?'ok':''} num">${who.length} with access</span></div></article>`;
+      }).join('')}</div>
+    </div>`;
+  }
+
+  /* ================= MODALS ================= */
+  let modalState = null;
+  function modal(html){ $('#modalRoot').innerHTML = `<div class="scrim" id="scrim">${html}</div>`; }
+  function closeModal(){ $('#modalRoot').innerHTML = ''; modalState = null; }
+
+  function memberModal(id){
+    const m = MEM.get(id); if(!m){ closeModal(); return; }
+    modalState = Object.assign({kind:'member', id}, modalState && modalState.id===id ? {confirm:modalState.confirm} : {});
+    const v = m.vertical || 'Research';
+    modal(`<div class="modal" role="dialog" aria-modal="true" aria-labelledby="mm-h">
+      <div class="mh"><div class="ident"><span class="av lg">${esc(initials(m.name))}</span><div><h2 id="mm-h">${esc(m.name||'Unnamed')}</h2><div class="sub num">${esc(m.id)} · Updated ${esc(ago(m.updatedAt))}</div></div></div>
+        <div style="display:flex;gap:10px;align-items:center">${chip(stateOf(m))}<button type="button" class="iconbtn" data-close aria-label="Close">${ic('x')}</button></div></div>
+      <div class="mb">
+        <div class="sect"><h2>Role</h2><span>Only admins can change this</span></div>
+        <div class="form" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+          <div class="field"><label for="a-vertical">Vertical</label><select id="a-vertical">${opts(Object.keys(VERTICALS),v)}</select></div>
+          <div class="field"><label for="a-division">Division</label><select id="a-division">${opts(VERTICALS[v],m.division)}</select></div>
+          <div class="field"><label for="a-role">Role</label><select id="a-role">${opts(ROLES[v],m.role)}</select></div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:12px"><button type="button" class="btn sm" data-act="saveRole">Save role</button></div>
+        <div class="sect"><h2>Details they entered</h2><span>${missing(m).length?`${missing(m).length} missing`:'Complete'}</span></div>
+        ${detailList(m)}
+        <div class="sect"><h2>Agreement</h2><span>${m.signedAt?'Signed '+esc(fmtDT(m.signedAt)):'Not signed yet'}</span></div>
+        ${m.signedAt?'<div id="adminSig" class="label">Loading signature…</div>':'<div class="empty" style="padding:20px">No signature on file.</div>'}
+        <div class="sect"><h2>Onboarding</h2><span class="num">${onboardCount(m)} of 4</span></div>
+        <dl class="dl">
+          <div><dt class="label">Details</dt><dd>${complete(m)?'Complete':'Incomplete'}</dd></div>
+          <div><dt class="label">Agreement</dt><dd>${m.signedAt?'Signed':'Not signed'}</dd></div>
+          <div><dt class="label">Handbook</dt><dd>${m.handbookAt?'Opened '+esc(fmtDate(m.handbookAt)):'Not opened'}</dd></div>
+          <div><dt class="label">Onboarding call</dt><dd>${esc(m.call||'Not booked')}</dd></div>
+        </dl>
+        <div class="sect"><h2>Access</h2></div>
+        <div class="dz"><div><b>${m.revoked?'Restore access':'Revoke access'}</b><p>${m.revoked?'Reopens their library if they have signed.':'Closes their library immediately. Use this when someone leaves.'}</p></div>
+          ${m.revoked?'<button type="button" class="btn sm" data-act="restore">Restore</button>'
+            : modalState.confirm==='revoke'?'<div style="display:flex;gap:6px"><button type="button" class="btn sm ghost" data-act="cancelConfirm">Cancel</button><button type="button" class="btn sm danger" data-act="revokeYes">Yes, revoke</button></div>'
+            : '<button type="button" class="btn sm danger" data-act="revoke">Revoke</button>'}</div>
+        <div class="dz"><div><b>Delete member</b><p>Removes their record and signature for good.</p></div>
+          ${modalState.confirm==='delete'?'<div style="display:flex;gap:6px"><button type="button" class="btn sm ghost" data-act="cancelConfirm">Cancel</button><button type="button" class="btn sm danger" data-act="deleteYes">Yes, delete</button></div>'
+            :'<button type="button" class="btn sm danger" data-act="delete">Delete</button>'}</div>
+      </div></div>`);
+    if(m.signedAt) Store.getSig(id).then(png => { const s=$('#adminSig'); if(s) s.outerHTML = png?`<img class="sigimg" src="${png}" alt="Signature of ${esc(m.name)}">`:'<div class="empty" style="padding:20px">Signature image not found.</div>'; }).catch(()=>{});
+  }
+  function addModal(created){
+    modalState = {kind:'add'};
+    if(created){
+      modal(`<div class="modal sm" role="dialog" aria-modal="true" aria-labelledby="ad-h">
+        <div class="mh"><div><h2 id="ad-h">Member added</h2><p>Send them their member ID. They sign in with it and their email, then fill in the rest.</p></div><button type="button" class="iconbtn" data-close aria-label="Close">${ic('x')}</button></div>
+        <div class="mb"><div class="label">Member ID</div><div class="idbox"><b class="num" id="newId">${esc(created.id)}</b><button type="button" class="btn sm" data-copy="${esc(created.id)}">${ic('copy')} Copy</button></div>
+          <p style="color:var(--muted);font-size:13.5px;margin:14px 0 0">Email on file: ${esc(created.email)}</p></div>
+        <div class="mf"><div class="r"><button type="button" class="btn ghost" data-act="add">Add another</button><button type="button" class="btn pri" data-close>Done</button></div></div></div>`);
+      return;
+    }
+    modal(`<div class="modal sm" role="dialog" aria-modal="true" aria-labelledby="ad-h">
+      <div class="mh"><div><h2 id="ad-h">Add a member</h2><p>Set their role. They complete the rest when they sign in.</p></div><button type="button" class="iconbtn" data-close aria-label="Close">${ic('x')}</button></div>
+      <form id="addForm" novalidate><div class="mb"><div class="form">
+        <div class="field full"><label for="n-name">Full name</label><input id="n-name"></div>
+        <div class="field full"><label for="n-email">Email</label><input id="n-email" type="email"></div>
+        <div class="field"><label for="n-vertical">Vertical</label><select id="n-vertical">${opts(Object.keys(VERTICALS),'Research')}</select></div>
+        <div class="field"><label for="n-division">Division</label><select id="n-division">${opts(VERTICALS.Research,'M&A')}</select></div>
+        <div class="field full"><label for="n-role">Role</label><select id="n-role">${opts(ROLES.Research,'Analyst')}</select></div>
+      </div><p class="err" id="addErr" style="margin:14px 0 0"></p></div>
+      <div class="mf"><div class="r"><button type="button" class="btn ghost" data-close>Cancel</button><button type="submit" class="btn pri">Add member</button></div></div></form></div>`);
+    setTimeout(()=>$('#n-name')?.focus(), 30);
+  }
+  function viewerModal(rid, page){
+    const r = RESOURCES.find(x=>x.id===rid), m = me(); if(!r || !hasAccess(m)) return;
+    modalState = {kind:'viewer', rid, page};
+    const total = r.secs.length + 1;
+    const body = page===0
+      ? `<div class="w">VANTEDGE</div><h3>${esc(r.t)}</h3><div class="k">${esc(r.type)} · ${esc(r.div==='All'?'All members':r.div)}</div><div class="l" style="width:86%;margin-top:18px"></div><div class="l" style="width:70%"></div>
+         <div class="k" style="margin-top:34px">Contents</div>${r.secs.map((s,i)=>`<div style="font-size:13px;margin-top:8px">${i+1}. ${esc(s)}</div>`).join('')}`
+      : `<div class="w">VANTEDGE</div><div class="k">Section ${page}</div><h3>${esc(r.secs[page-1])}</h3>${[92,86,95,70,0,90,82,88,64,0,93,78].map(w=>w?`<div class="l" style="width:${w}%"></div>`:'<div style="height:14px"></div>').join('')}`;
+    modal(`<div class="modal" role="dialog" aria-modal="true" aria-labelledby="vw-h">
+      <div class="mh"><div><h2 id="vw-h">${esc(r.t)}</h2><p>View only · downloads off · preview pages</p></div><button type="button" class="iconbtn" data-close aria-label="Close">${ic('x')}</button></div>
+      <div class="mb" style="background:var(--bg)"><div class="sheet">${body}<div class="wm"><span>${esc(m.name)} · ${esc(m.id)} · Vantedge confidential</span></div></div></div>
+      <div class="mf"><button type="button" class="btn sm" data-page="-1" ${page===0?'disabled':''}>Previous</button><span class="num" style="color:var(--muted);font-size:13px">Page ${page+1} of ${total}</span><button type="button" class="btn sm" data-page="1" ${page===total-1?'disabled':''}>Next</button></div></div>`);
+  }
+  function bookModal(){
+    const m = me(); modalState = {kind:'book', pick:m.call||null};
+    drawBook();
+  }
+  function drawBook(){
+    modal(`<div class="modal sm" role="dialog" aria-modal="true" aria-labelledby="bk-h">
+      <div class="mh"><div><h2 id="bk-h">Book your onboarding call</h2><p>30 minutes over Google Meet with the team.</p></div><button type="button" class="iconbtn" data-close aria-label="Close">${ic('x')}</button></div>
+      <div class="mb"><div class="slots">${SLOTS.map(s=>`<button type="button" class="slot" data-slot="${esc(s)}" aria-pressed="${modalState.pick===s}">${esc(s)}<span>30 min</span></button>`).join('')}</div></div>
+      <div class="mf"><div class="r"><button type="button" class="btn ghost" data-close>Cancel</button><button type="button" class="btn pri" data-act="bookYes" ${modalState.pick?'':'disabled'}>Confirm slot</button></div></div></div>`);
+  }
+  function msgModal(name){
+    modalState = {kind:'msg', name};
+    modal(`<div class="modal sm" role="dialog" aria-modal="true" aria-labelledby="ms-h">
+      <div class="mh"><div><h2 id="ms-h">Message ${esc(name)}</h2><p>Messaging isn't connected in this version yet.</p></div><button type="button" class="iconbtn" data-close aria-label="Close">${ic('x')}</button></div>
+      <div class="mb"><div class="field"><label for="msg">Your message</label><textarea id="msg" rows="5" placeholder="Hi ${esc(name)}, quick question about my first report."></textarea></div><p class="err" id="msgErr" style="margin:10px 0 0"></p></div>
+      <div class="mf"><div class="r"><button type="button" class="btn ghost" data-close>Cancel</button><button type="button" class="btn pri" data-act="sendMsg">Send</button></div></div></div>`);
+    setTimeout(()=>$('#msg')?.focus(), 30);
+  }
+
+  /* ================= RENDER ================= */
+  function render(){
+    const app = $('#app');
+    const focusId = document.activeElement && document.activeElement.id;
+    const selStart = document.activeElement && document.activeElement.selectionStart;
+    const m = me();
+    if(UI.mode === 'admin' && canAdmin){
+      app.innerHTML = shell(UI.adminTab==='access' ? adminAccess() : adminMembers());
+    } else if(!m){
+      UI.mode = 'member';
+      app.innerHTML = authView(); requestAnimationFrame(drawGrain);
+    } else {
+      const v = {overview, profile, library, agreement}[UI.tab] || overview;
+      app.innerHTML = shell(v(m));
+      if(UI.tab==='agreement' && !m.signedAt && complete(m)) setupPad();
+      if(UI.tab==='agreement' && m.signedAt) Store.getSig(m.id).then(png=>{ const s=$('#sigSlot'); if(s) s.outerHTML = png?`<img class="sigimg" src="${png}" alt="Your signature">`:'<div class="empty">Signature image not found.</div>'; }).catch(()=>{});
+    }
+    if(focusId === 'q'){ const q=$('#q'); if(q){ q.focus(); try{ q.setSelectionRange(selStart,selStart); }catch(e){} } }
+    // refresh an open member modal with live data
+    if(modalState && modalState.kind==='member') memberModal(modalState.id);
+  }
+  function setNav(k, edit){
+    if(UI.mode==='admin') UI.adminTab = k; else { UI.tab = k; UI.editing = !!edit; }
+    closeModal(); render(); window.scrollTo({top:0, behavior:'smooth'});
+    if(edit) setTimeout(()=>{ const f=document.querySelector('#pForm input:not([disabled])'); if(f) f.focus(); }, 40);
+  }
+  function linkSelects(p){
+    const v = $('#'+p+'-vertical'); if(!v) return;
+    v.addEventListener('change', () => {
+      $('#'+p+'-division').innerHTML = opts(VERTICALS[v.value], VERTICALS[v.value][0]);
+      $('#'+p+'-role').innerHTML = opts(ROLES[v.value], ROLES[v.value][0]);
+    });
+  }
+  new MutationObserver(()=>{ ['r','n','a'].forEach(p=>{ const v=$('#'+p+'-vertical'); if(v && !v._linked){ v._linked=true; linkSelects(p); } }); }).observe(document.body,{childList:true,subtree:true});
+
+  /* ================= EVENTS ================= */
+  document.addEventListener('click', async e => {
+    if(e.target.id === 'scrim'){ closeModal(); return; }
+    const row = e.target.closest('tr[data-view]');
+    if(row){ modalState = null; memberModal(row.dataset.view); return; }
+    const t = e.target.closest('button'); if(!t) return;
+    const d = t.dataset, m = me();
+
+    if(d.auth){ UI.authTab = d.auth; render(); return; }
+    if(d.mode){ UI.mode = d.mode; if(d.mode==='admin') UI.adminTab='members'; closeModal(); render(); window.scrollTo({top:0}); return; }
+    if(d.nav){ setNav(d.nav, d.edit); return; }
+    if(d.filter){ UI.filter = d.filter; render(); return; }
+    if(d.status){ UI.statusF = d.status; render(); return; }
+    if('close' in d){ closeModal(); return; }
+    if(d.open){
+      viewerModal(d.open, 0);
+      const r = RESOURCES.find(x=>x.id===d.open);
+      if(m && !m.handbookAt && r && r.div===m.division){ save(()=>Store.update(m.id,{handbookAt:nowISO(), updatedAt:nowISO()})); }
+      return;
+    }
+    if(d.page){ const r = RESOURCES.find(x=>x.id===modalState.rid); viewerModal(modalState.rid, Math.max(0, Math.min(r.secs.length, modalState.page + (+d.page)))); return; }
+    if(d.slot){ modalState.pick = d.slot; drawBook(); return; }
+    if(d.msg){ msgModal(d.msg); return; }
+    if(d.copy){ try{ await navigator.clipboard.writeText(d.copy); toast('Member ID copied'); }catch(err){ const s=window.getSelection(), rg=document.createRange(); rg.selectNodeContents($('#newId')); s.removeAllRanges(); s.addRange(rg); toast('Selected. Press Ctrl+C or Cmd+C to copy.'); } return; }
+    if(t.id === 'signOut'){ UI.session = null; writeSession(null); UI.tab='overview'; UI.authTab='signin'; render(); toast('Signed out'); return; }
+    if(t.id === 'editBtn'){ UI.editing = true; render(); setTimeout(()=>$('#p-name')?.focus(), 30); return; }
+    if(t.id === 'cancelEdit'){ UI.editing = false; render(); return; }
+
+    switch(d.act){
+      case 'book': if(m) bookModal(); return;
+      case 'bookYes': { const pick = modalState.pick; closeModal(); if(await save(()=>Store.update(m.id,{call:pick, updatedAt:nowISO()}), `Onboarding call booked for ${pick}`)) render(); return; }
+      case 'sendMsg': { if(!$('#msg').value.trim()){ $('#msgErr').textContent = 'Write a message before sending.'; return; } closeModal(); toast('Not sent. Messaging isn\'t connected yet, so use WhatsApp for now.'); return; }
+      case 'add': addModal(); return;
+      case 'saveRole': { const id = modalState.id; const v=$('#a-vertical').value; await save(()=>Store.update(id,{vertical:v, division:$('#a-division').value, role:$('#a-role').value, updatedAt:nowISO()}), 'Role saved'); return; }
+      case 'revoke': modalState.confirm='revoke'; memberModal(modalState.id); return;
+      case 'delete': modalState.confirm='delete'; memberModal(modalState.id); return;
+      case 'cancelConfirm': modalState.confirm=null; memberModal(modalState.id); return;
+      case 'revokeYes': { const id = modalState.id; modalState.confirm=null; await save(()=>Store.update(id,{revoked:true, revokedAt:nowISO(), updatedAt:nowISO()}), 'Access revoked. Their library is now closed.'); return; }
+      case 'restore': { const id = modalState.id; await save(()=>Store.update(id,{revoked:false, revokedAt:null, updatedAt:nowISO()}), 'Access restored'); return; }
+      case 'deleteYes': { const id = modalState.id; closeModal(); if(UI.session===id){ UI.session=null; writeSession(null); } await save(()=>Store.remove(id), 'Member deleted'); render(); return; }
+    }
+  });
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape' && $('#scrim')) closeModal();
+    if(e.key === 'Enter' && e.target.matches && e.target.matches('tr[data-view]')){ modalState=null; memberModal(e.target.dataset.view); }
+  });
+  document.addEventListener('input', e => { if(e.target.id === 'q'){ UI.q = e.target.value; render(); } });
+
+  document.addEventListener('submit', async e => {
+    e.preventDefault();
+    const f = e.target.id, val = id => ($('#'+id)?.value || '').trim();
+    const emailOk = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+
+    if(f === 'signinForm'){
+      const id = val('s-id').toUpperCase(), email = val('s-email').toLowerCase(), err = $('#signErr');
+      if(!id || !email){ err.textContent = 'Enter your member ID and email.'; return; }
+      const m = MEM.get(id);
+      if(!m || String(m.email||'').toLowerCase() !== email){ err.textContent = 'That member ID and email don\'t match. Check your offer email, or create a profile if you\'re new.'; return; }
+      UI.session = id; writeSession(id); UI.tab = 'overview'; render(); window.scrollTo({top:0}); toast(`Signed in as ${m.preferred||m.name}`);
+    }
+    if(f === 'regForm'){
+      const name = val('r-name'), email = val('r-email'), err = $('#regErr');
+      if(!name){ err.textContent = 'Enter your full name.'; return; }
+      if(!emailOk(email)){ err.textContent = 'Enter a valid email, like name@university.edu.'; return; }
+      if([...MEM.values()].some(x=>String(x.email||'').toLowerCase()===email.toLowerCase())){ err.textContent = 'A member with this email already exists. Sign in with your member ID instead.'; return; }
+      const id = await newId(), t = nowISO();
+      const doc = {id, name, preferred:'', email, phone:'', university:'', chapter:'', timezone:'', linkedin:'',
+        vertical:$('#r-vertical').value, division:$('#r-division').value, role:$('#r-role').value,
+        revoked:false, signedAt:null, handbookAt:null, call:null, createdAt:t, updatedAt:t, source:'self'};
+      if(await save(()=>Store.set(id, doc))){ UI.session = id; writeSession(id); UI.tab='profile'; UI.editing = true; if(!MEM.has(id)) MEM.set(id, doc); render(); toast(`Profile created. Your member ID is ${id}.`); setTimeout(()=>$('#p-phone')?.focus(), 40); }
+    }
+    if(f === 'pForm'){
+      const m = me(), err = $('#pErr');
+      const patch = {name:val('p-name'), preferred:val('p-preferred'), email:val('p-email'), phone:val('p-phone'), university:val('p-university'), chapter:$('#p-chapter').value, timezone:val('p-timezone'), linkedin:val('p-linkedin')};
+      if(!patch.name){ err.textContent = 'Full name can\'t be empty.'; return; }
+      if(!emailOk(patch.email)){ err.textContent = 'Enter a valid email, like name@university.edu.'; return; }
+      if(patch.phone && !/^\+\d[\d\s-]{6,}$/.test(patch.phone)){ err.textContent = 'Start your phone number with + and the country code, like +60 12-345 6789.'; return; }
+      patch.updatedAt = nowISO();
+      if(await save(()=>Store.update(m.id, patch))){
+        UI.editing = false; render();
+        const left = missing(Object.assign({}, m, patch)).length;
+        toast(left ? `Saved. ${left} required field${left===1?'':'s'} still missing.` : 'Details saved. Next, sign the Member Agreement.');
+      }
+    }
+    if(f === 'sForm'){
+      const m = me(), err = $('#sErr');
+      if(!$('#c1').checked || !$('#c2').checked){ err.textContent = 'Tick both boxes to confirm you agree.'; return; }
+      if(val('typed').toLowerCase() !== String(m.name).toLowerCase()){ err.textContent = `Type your full name exactly as on your profile: ${m.name}.`; return; }
+      if(strokes < 1){ err.textContent = 'Draw your signature in the box.'; return; }
+      const png = exportSig(), t = nowISO();
+      const ok = await save(async()=>{ await Store.setSig(m.id, png); await Store.update(m.id, {signedAt:t, signedName:val('typed'), updatedAt:t}); });
+      if(ok){ render(); window.scrollTo({top:0, behavior:'smooth'}); toast('Signed. Your library is unlocked.'); }
+    }
+    if(f === 'addForm'){
+      const name = val('n-name'), email = val('n-email'), err = $('#addErr');
+      if(!name){ err.textContent = 'Enter their full name.'; return; }
+      if(!emailOk(email)){ err.textContent = 'Enter a valid email.'; return; }
+      if([...MEM.values()].some(x=>String(x.email||'').toLowerCase()===email.toLowerCase())){ err.textContent = 'A member with this email already exists.'; return; }
+      const id = await newId(), t = nowISO();
+      const doc = {id, name, preferred:'', email, phone:'', university:'', chapter:'', timezone:'', linkedin:'',
+        vertical:$('#n-vertical').value, division:$('#n-division').value, role:$('#n-role').value,
+        revoked:false, signedAt:null, handbookAt:null, call:null, createdAt:t, updatedAt:t, source:'admin'};
+      if(await save(()=>Store.set(id, doc))) addModal({id, email});
+    }
+  });
+  window.addEventListener('resize', () => { if($('#grain')) drawGrain(); });
+
+  render();
+  Store.init();
+})();
+</script>
+</body>
+</html>
